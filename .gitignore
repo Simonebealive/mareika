@@ -48,3 +48,4 @@ _testmain.go
 *.psd
 
 .archive
+node_modules
