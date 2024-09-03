@@ -12,12 +12,12 @@ const loader = document.querySelector('.loader')
 
 // select inputs
 const submitBtn = document.querySelector('.submit-btn');
-const name = document.querySelector('#name');
+const name = document.querySelector('#name') || null;
 const email = document.querySelector('#email');
 const password = document.querySelector('#password');
-const number = document.querySelector('#number');
-const tac = document.querySelector('#terms-and-cond');
-const notification = document.querySelector('#notification');
+const number = document.querySelector('#number') || null;
+const tac = document.querySelector('#terms-and-cond') || null;
+const notification = document.querySelector('#notification') || null;
 
 const showAlert = (msg) => {
     let alertBox = document.querySelector('.alert-box')
@@ -52,15 +52,27 @@ const processData = (data) => {
 }
 
 submitBtn.addEventListener('click', () => {
-    loader.style.display = 'block';
-    sendData('/signup', {
-        name: name.value,
-        email: email.value,
-        password: password.value,
-        number: number.value,
-        tac: tac.checked,
-        notification: notification.checked,
-        seller: false
-    })
+    if (name != null) { // sign up page
+        loader.style.display = 'block';
+        sendData('/signup', {
+            name: name.value,
+            email: email.value,
+            password: password.value,
+            number: number.value,
+            tac: tac.checked,
+            notification: notification.checked,
+            seller: false
+        })
+    } else { // login page
+        if (!email.value.length || !password.value.length) {
+            showAlert('please fill out the form')
+        } else {
+            loader.style.display = 'block';
+            sendData('/login', {
+                email: email.value,
+                password: password.value,
+            })
+        }
+    }
 });
 

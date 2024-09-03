@@ -66,6 +66,40 @@ app.post("/signup", (req, res) => {
         })
 });
 
+app.get('/login', (req, res) => {
+    res.sendFile(path.join(staticPath, "login.html"))
+})
+
+app.post("/login", (req, res) => {
+    let { email, password } = req.body;
+    if (!email.length || !password.length) {
+        return res.json({ 'alert': 'please fill out the form' })
+    }
+    db.collection('users').doc(email).get()
+        .then(user => {
+            if (!user.exists) {
+                return res.json({ 'alert': 'email does not exist' })
+            } else {
+                bcrypt.compare(password, user.data().password, (err, result) => {
+                    if (result) {
+                        let data = user.data();
+                        return res.json({
+                            name: data.name,
+                            email: data.email,
+                            seller: data.seller,
+                        })
+                    } else {
+                        return res.json({ 'alert': 'password is incorrect' })
+                    }
+                })
+            }
+        })
+})
+
+app.get('/404', (req, res) => {
+    res.sendFile(path.join(staticPath, "404.html"))
+})
+
 app.use((req, res) => {
     res.sendFile(path.join(staticPath, "404.html"));
 });
