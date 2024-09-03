@@ -49,3 +49,4 @@ _testmain.go
 
 .archive
 node_modules
+.env

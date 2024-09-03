@@ -25,34 +25,30 @@ const sendData = (path, data) => {
         headers: new Headers({ 'Content-Type': 'application/json' }),
         body: JSON.stringify(data)
     }).then((res) => res.json()).then((response => {
-        console.log(response);
+        processData(response);
     }))
 }
 
-submitBtn.addEventListener('click', () => {
-    if (name.value.length < 2) {
-        showAlert("Name can't be less than 2 characters!")
-    } else if (!email.value.length) {
-        showAlert("Enter a email address")
-    } else if (password.value.length < 8) {
-        showAlert("Password has to be at least 8 characters long!")
-    } else if (!number.value.length) {
-        showAlert("Enter a phone number")
-    } else if (!Number(number.value) || number.value.length < 10) {
-        showAlert("Number invalid!")
-    } else if (!tac.checked) {
-        showAlert("Agree to the the terms and conditions")
-    } else {
-        loader.style.display = 'block';
-        sendData('/signup', {
-            name: name.value,
-            email: email.value,
-            password: password.value,
-            number: number.value,
-            tac: tac.checked,
-            notification: notification.checked,
-            seller: false
-        })
+const processData = (data) => {
+    loader.style.display = null;
+    if (data.alert) {
+        showAlert(data.alert);
+    } else if (data.name) {
+        // create authToken
+        data.authToken = generateToken(data.email)
     }
+}
+
+submitBtn.addEventListener('click', () => {
+    loader.style.display = 'block';
+    sendData('/signup', {
+        name: name.value,
+        email: email.value,
+        password: password.value,
+        number: number.value,
+        tac: tac.checked,
+        notification: notification.checked,
+        seller: false
+    })
 });
 
