@@ -35,7 +35,7 @@ body {
     line-height: normal;
 }
 
-.become-seller .btn {
+.btn {
     padding: 5px;
     border: none;
     outline: none;
@@ -75,4 +75,26 @@ textarea {
     margin: 10px 0;
     width: auto;
     padding: 0 40px;
+}
+
+/* product listing */
+.add-product {
+    background: #fff;
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 20px;
+    border-radius: 10px;
+    margin-bottom: 50px;
+}
+
+.add-product-title {
+    text-transform: capitalize;
+    color: #383838;
+}
+
+.no-product-image {
+    display: block;
+    margin: auto;
 }
