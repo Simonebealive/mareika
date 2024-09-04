@@ -1,35 +1,53 @@
-const express = require('express');
-const admin = require('firebase-admin');
-const bcrypt = require('bcrypt');
-const path = require('path');
-const { stat } = require('fs');
+const express = require('express')
+const admin = require('firebase-admin')
+const bcrypt = require('bcrypt')
+const path = require('path')
+const { stat } = require('fs')
 
 // firebase admin setup
 let serviceAccount = require("./.env/mareika-ecom-firebase-adminsdk-dvj8h-84846c749c.json")
 admin.initializeApp({
     credential: admin.credential.cert(serviceAccount)
-});
+})
 
 let db = admin.firestore()
 
 // init express
-let staticPath = path.join(__dirname, "public");
-const app = express();
+let staticPath = path.join(__dirname, "public")
+const app = express()
 // middlewares
-app.use(express.static(staticPath));
-app.use(express.json());
+app.use(express.static(staticPath))
+app.use(express.json())
 
 // routes
 app.get("/", (req, res) => {
-    res.sendFile(path.join(staticPath, "index.html"));
-});
+    res.sendFile(path.join(staticPath, "index.html"))
+})
+
+app.get("/seller", (req, res) => {
+    res.sendFile(path.join(staticPath, "seller.html"))
+})
+
+app.post("/seller", (req, res) => {
+    let { name, address, about, number, tac, legitInfo, email } = req.body
+    if (!name.length ||
+        !address.length ||
+        !about.length ||
+        !number.length < 10 ||
+        !Number(number)) {
+        return res.json({ 'alert': 'Some informations are invalid' })
+    } else if (!tac || !legitInfo) {
+        return res.json({ 'alert': 'Boxes must be checked!' })
+    }
+    // store seller in db
+})
 
 app.get("/signup", (req, res) => {
-    res.sendFile(path.join(staticPath, "signup.html"));
-});
+    res.sendFile(path.join(staticPath, "signup.html"))
+})
 
 app.post("/signup", (req, res) => {
-    let { name, email, password, number, tac } = req.body;
+    let { name, email, password, number, tac } = req.body
     if (name.length < 3) {
         return res.json({ 'alert': 'name must be at least two letters long' })
     } else if (!email.length) {
@@ -51,7 +69,7 @@ app.post("/signup", (req, res) => {
             } else {
                 bcrypt.genSalt(10, (err, salt) => {
                     bcrypt.hash(password, salt, (err, hash) => {
-                        req.body.password = hash;
+                        req.body.password = hash
                         db.collection('users').doc(email).set(req.body)
                             .then(data => {
                                 res.json({
@@ -64,14 +82,14 @@ app.post("/signup", (req, res) => {
                 })
             }
         })
-});
+})
 
 app.get('/login', (req, res) => {
     res.sendFile(path.join(staticPath, "login.html"))
 })
 
 app.post("/login", (req, res) => {
-    let { email, password } = req.body;
+    let { email, password } = req.body
     if (!email.length || !password.length) {
         return res.json({ 'alert': 'please fill out the form' })
     }
@@ -82,7 +100,7 @@ app.post("/login", (req, res) => {
             } else {
                 bcrypt.compare(password, user.data().password, (err, result) => {
                     if (result) {
-                        let data = user.data();
+                        let data = user.data()
                         return res.json({
                             name: data.name,
                             email: data.email,
@@ -101,9 +119,9 @@ app.get('/404', (req, res) => {
 })
 
 app.use((req, res) => {
-    res.sendFile(path.join(staticPath, "404.html"));
-});
+    res.sendFile(path.join(staticPath, "404.html"))
+})
 
 app.listen(3000, () => {
-    console.log("Server is running on port 3000");
-});
+    console.log("Server is running on port 3000")
+})

@@ -1,0 +1,78 @@
+body {
+    width: 100%;
+    display: block;
+    padding: 0 5vw;
+    position: relative;
+    font-family: 'Times New Roman', Times, sans-serif;
+}
+
+.logo {
+    margin: 20px auto 50px;
+}
+
+/* become seller element */
+.become-seller {
+    background-color: #fff;
+    padding: 30px;
+    border-radius: 10px;
+}
+
+.become-seller.hide {
+    display: none;
+}
+
+.become-seller .heading {
+    color: #383838;
+    text-transform: capitalize;
+    font-weight: 700;
+    font-size: 18px;
+}
+
+.become-seller .des {
+    color: #383838;
+    margin: 20px 0;
+    margin-bottom: 10px;
+    line-height: normal;
+}
+
+.become-seller .btn {
+    padding: 5px;
+    border: none;
+    outline: none;
+    background: #383838;
+    color: #fff;
+    padding: 10px 30px;
+    border-radius: 5px;
+    text-transform: capitalize;
+    font-size: 14px;
+    cursor: pointer;
+}
+
+/* apply form */
+.apply-form.hide {
+    display: none;
+}
+
+.apply-form input,
+textarea {
+    font-weight: 500;
+    font-size: 16px;
+}
+
+.apply-form input:not(input[type="checkbox"]) {
+    width: 100%;
+}
+
+.apply-form textarea {
+    width: 100%;
+    height: 90px;
+    resize: none;
+    padding: 10px 20px;
+    font-family: 'Times New Roman', Times, sans-serif;
+}
+
+.apply-form .submit-btn {
+    margin: 10px 0;
+    width: auto;
+    padding: 0 40px;
+}

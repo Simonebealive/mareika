@@ -46,7 +46,6 @@ const sendData = (path, data) => {
 }
 
 const processData = (data) => {
-    console.log('data:', data)
     loader.style.display = null;
     if (data.alert) {
         showAlert(data.alert);
