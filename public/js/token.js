@@ -1,14 +1,12 @@
 let char = `123abcde.fmnopqLABCDE@FJKLMNOPQRSTUVWXYZ456789stuvwxyz0!#$%&ijkrgh'*+-/=?^_${''}{|}~`;
 
 const generateToken = (key) => {
-    console.log(key)
     let token = '';
     for (let i = 0; i < key.length; i++) {
         let index = char.indexOf(key[i]) || char.length / 2;
         let randomIndex = Math.floor(Math.random() * index);
         token += char[randomIndex] + char[index - randomIndex];
     }
-    console.log(token)
     return token;
 };
 
@@ -53,5 +51,11 @@ const processData = (data) => {
         data.authToken = generateToken(data.email);
         sessionStorage.user = JSON.stringify(data);
         location.replace('/')
+    } else if(data == true) { // TODO data.seller == true
+        // seller page
+        let user = JSON.parse(sessionStorage.user)
+        user.seller = true
+        sessionStorage.user = JSON.stringify(user)
+        location.reload()
     }
 }

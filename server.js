@@ -30,16 +30,23 @@ app.get("/seller", (req, res) => {
 
 app.post("/seller", (req, res) => {
     let { name, address, about, number, tac, legitInfo, email } = req.body
-    if (!name.length ||
-        !address.length ||
-        !about.length ||
-        !number.length < 10 ||
+    if (!about.length ||
+        number.length < 10 ||
         !Number(number)) {
         return res.json({ 'alert': 'Some informations are invalid' })
     } else if (!tac || !legitInfo) {
         return res.json({ 'alert': 'Boxes must be checked!' })
+    } else {
+        // store seller in db
+        db.collection('sellers').doc(email).set(req.body)
+            .then(data => {
+                db.collection('users').doc(email).update({
+                    seller: true
+                }).then(data => {
+                    res.json(true)
+                })
+            })
     }
-    // store seller in db
 })
 
 app.get("/signup", (req, res) => {
