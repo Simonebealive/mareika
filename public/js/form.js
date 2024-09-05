@@ -1,4 +1,4 @@
-import { sendData } from "./token";
+import { sendData } from "./token.js";
 
 // redirect to home page if user logged in
 window.onload = () => {
@@ -32,7 +32,7 @@ submitBtn.addEventListener('click', () => {
             tac: tac.checked,
             notification: notification.checked,
             seller: false
-        })
+        }, loader)
     } else { // login page
         if (!email.value.length || !password.value.length) {
             showAlert('please fill out the form')
@@ -41,7 +41,7 @@ submitBtn.addEventListener('click', () => {
             sendData('/login', {
                 email: email.value,
                 password: password.value,
-            })
+            }, loader)
         }
     }
 });

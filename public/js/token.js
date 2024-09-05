@@ -33,17 +33,17 @@ const showAlert = (msg) => {
     }, 3000);
 }
 
-const sendData = (path, data) => {
+const sendData = (path, data, loader) => {
     fetch(path, {
         method: 'post',
         headers: new Headers({ 'Content-Type': 'application/json' }),
         body: JSON.stringify(data)
     }).then((res) => res.json()).then((response => {
-        processData(response);
+        processData(response, loader);
     }))
 }
 
-const processData = (data) => {
+const processData = (data, loader) => {
     loader.style.display = null;
     if (data.alert) {
         showAlert(data.alert);

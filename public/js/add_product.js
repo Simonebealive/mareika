@@ -72,19 +72,22 @@ uploadImages.forEach((fileupload, index) => {
         const file = fileupload.files[0]
         let imageUrl
         if (file.type.includes('image')) {
-            fetch('/s3url').then(res => res.json())
+            fetch('/s3url')
+                .then(res => res.json())
                 .then(url => {
                     fetch(url, {
                         method: 'PUT',
-                        headers: new Headers({ 'Content-Type': 'multipart/form-data' }),
+                        headers: new Headers({ 'Content-Type': file.type }),
                         body: file
                     }).then(res => {
                         imageUrl = url.split("?")[0]
                         imagePaths[index] = imageUrl
                         let label = document.querySelector(`label[for=${fileupload.id}]`)
                         label.style.backgroundImage = `url(${imageUrl})`
-                    })
-                })
+                        let productImage = document.querySelector('.product-image')
+                        productImage.style.backgroundImage = `url(${imageUrl})`
+                    }).catch(error => { console.error('Failed to upload image', error) })
+                }).catch(error => { console.error('Failed to get s3 url', error) })
         }
     })
 })
