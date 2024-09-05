@@ -49,6 +49,10 @@ app.post("/seller", (req, res) => {
     }
 })
 
+app.get("/add_product", (req, res) => {
+    res.sendFile(path.join(staticPath, "add_product.html"))
+})
+
 app.get("/signup", (req, res) => {
     res.sendFile(path.join(staticPath, "signup.html"))
 })

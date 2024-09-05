@@ -1,4 +1,4 @@
-let char = `123abcde.fmnopqLABCDE@FJKLMNOPQRSTUVWXYZ456789stuvwxyz0!#$%&ijkrgh'*+-/=?^_${''}{|}~`;
+let char = `123abcde.fmnopqlABCDE@FJKLMNOPQRSTUVWXYZ456789stuvwxyz0!#$%&ijkrgh'*+-/=?^_${'`'}{|}~`;
 
 const generateToken = (key) => {
     let token = '';
