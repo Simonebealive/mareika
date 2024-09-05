@@ -8,7 +8,7 @@ const generateToken = (key) => {
         token += char[randomIndex] + char[index - randomIndex];
     }
     return token;
-};
+}
 
 const compareToken = (token, key) => {
     let string = '';
@@ -21,7 +21,7 @@ const compareToken = (token, key) => {
         return true;
     }
     return false;
-};
+}
 
 const showAlert = (msg) => {
     let alertBox = document.querySelector('.alert-box')
@@ -59,3 +59,5 @@ const processData = (data) => {
         location.reload()
     }
 }
+
+export {sendData, compareToken}

@@ -5,12 +5,42 @@ const path = require('path')
 const { stat } = require('fs')
 
 // firebase admin setup
-let serviceAccount = require("./.env/mareika-ecom-firebase-adminsdk-dvj8h-84846c749c.json")
+let serviceAccount = require("./.cred/mareika-ecom-firebase-adminsdk-dvj8h-84846c749c.json")
 admin.initializeApp({
     credential: admin.credential.cert(serviceAccount)
 })
 
 let db = admin.firestore()
+
+// aws config
+const aws = require('aws-sdk')
+const dotenv = require('dotenv')
+dotenv.config()
+
+// aws parameters
+const region = "eu-north-1"
+const bucketName = "mareika-ecom"
+const accessKeyId = process.env.AWS_ACCESS_KEY
+const secretAccessKey = process.env.AWS_SECRET_KEY
+aws.config.update({
+    region, accessKeyId, secretAccessKey
+})
+// init s3
+const s3 = new aws.S3()
+// generate image upload link
+async function generateUrl() {
+    let date = new Date();
+    let id = parseInt(Math.random() * 10000000000)
+    const imageName = `${id}${date.getTime()}.jpg`
+    const params = ({
+        Bucket: bucketName,
+        Key: imageName,
+        Expires: 300,
+        ContentType: 'image/jpeg'
+    })
+    const uploadUrl = await s3.getSignedUrlPromise('putObject', params)
+    return uploadUrl
+}
 
 // init express
 let staticPath = path.join(__dirname, "public")
@@ -51,6 +81,11 @@ app.post("/seller", (req, res) => {
 
 app.get("/add_product", (req, res) => {
     res.sendFile(path.join(staticPath, "add_product.html"))
+})
+
+// get the upload link
+app.get("/s3url", (req, res) => {
+    generateUrl().then(url => res.json(url))
 })
 
 app.get("/signup", (req, res) => {

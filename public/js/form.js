@@ -1,3 +1,5 @@
+import { sendData } from "./token";
+
 // redirect to home page if user logged in
 window.onload = () => {
     if (sessionStorage.user) {
@@ -20,7 +22,7 @@ const tac = document.querySelector('#terms-and-cond') || null;
 const notification = document.querySelector('#notification') || null;
 
 submitBtn.addEventListener('click', () => {
-    if (name != null) { // sign up page
+    if (name != null) {
         loader.style.display = 'block';
         sendData('/signup', {
             name: name.value,

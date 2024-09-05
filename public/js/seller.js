@@ -1,3 +1,5 @@
+import { sendData } from "./token"
+
 let loader = document.querySelector('.loader')
 const becomeSellerElement = document.querySelector('.become-seller')
 const productListingElement = document.querySelector('.product-listing')
