@@ -1,5 +1,3 @@
-import { sendData } from "./token.js";
-
 // redirect to home page if user logged in
 window.onload = () => {
     if (sessionStorage.user) {

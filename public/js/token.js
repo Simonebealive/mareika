@@ -60,4 +60,3 @@ const processData = (data, loader) => {
     }
 }
 
-export {sendData, compareToken}

@@ -1,5 +1,3 @@
-import { sendData, compareToken } from "./token.js"
-
 let user = JSON.parse(sessionStorage.user || null)
 let loader = document.querySelector('.loader')
 
@@ -83,11 +81,17 @@ uploadImages.forEach((fileupload, index) => {
                         imageUrl = url.split("?")[0]
                         imagePaths[index] = imageUrl
                         let label = document.querySelector(`label[for=${fileupload.id}]`)
-                        label.style.backgroundImage = `url(${imageUrl})`
+                        label.style.backgroundImage = `url("${imageUrl}")`;
                         let productImage = document.querySelector('.product-image')
-                        productImage.style.backgroundImage = `url(${imageUrl})`
-                    }).catch(error => { console.error('Failed to upload image', error) })
-                }).catch(error => { console.error('Failed to get s3 url', error) })
+                        productImage.style.backgroundImage = `url("${imageUrl}")`;
+                    }).catch(err => {
+                        console.error('Failed to upload image', err)
+                    })
+                }).catch(err => {
+                    console.error('Failed to get signed url', err)
+                })
+        } else {
+            showAlert('Please upload an image')
         }
     })
 })
