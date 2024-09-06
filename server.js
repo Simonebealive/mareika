@@ -56,6 +56,36 @@ app.get("/", (req, res) => {
   res.sendFile(path.join(staticPath, "index.html"));
 });
 
+app.post("/get-products", (req, res) => {
+  let { email } = req.body;
+  let docRef = db.collection("products").where("email", "==", email);
+  docRef.get().then((products) => {
+    if (products.empty) {
+      return res.json("no products");
+    }
+    let productArr = [];
+    products.forEach((item) => {
+      let data = item.data();
+      data.id = item.id;
+      productArr.push(data);
+    });
+    res.json(productArr);
+  });
+});
+
+app.post("/delete_product", (req, res) => {
+  let { id } = req.body;
+  db.collection("products")
+    .doc(id)
+    .delete()
+    .then((data) => {
+      res.json("success");
+    })
+    .catch((err) => {
+      res.json("error");
+    });
+});
+
 app.get("/seller", (req, res) => {
   res.sendFile(path.join(staticPath, "seller.html"));
 });
@@ -137,7 +167,6 @@ app.post("/add_product", (req, res) => {
   }
 });
 
-// get the up link
 app.get("/s3url", (req, res) => {
   generateUrl().then((url) => res.json(url));
 });

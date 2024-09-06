@@ -74,7 +74,7 @@
     object-fit: cover;
 }
 
-.discount-tag {
+.tag {
     position: absolute;
     padding: 5px 10px;
     background: #fff;
