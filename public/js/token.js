@@ -61,6 +61,6 @@ const processData = (data) => {
     sessionStorage.user = JSON.stringify(user);
     location.reload();
   } else if (data.product) {
-    location.href = "/seller"
+    location.href = "/seller";
   }
 };

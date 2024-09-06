@@ -168,9 +168,23 @@ addBtn.addEventListener("click", () => {
   if (!validForm()) {
     return;
   } else {
-    // making server request
     loader.style.display = "block";
     let data = productData();
+    sendData("/add_product", data);
+  }
+});
+
+saveDraftBtn.addEventListener("click", () => {
+  storeSizes();
+  if (!productName.value.length) {
+    showAlert("Enter product name");
+    return;
+  } else if (!sizes.length) {
+    showAlert("Select atleast one size");
+    return;
+  } else {
+    let data = productData();
+    data.draft = true;
     sendData("/add_product", data);
   }
 });

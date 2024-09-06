@@ -132,25 +132,28 @@ app.post("/add_product", (req, res) => {
     tac,
     images,
     email,
+    draft,
   } = req.body;
-  if (!productName.length) {
-    return res.json({ alert: "Enter product name" });
-  } else if (!productDes.length) {
-    return res.json({ alert: "Enter product description" });
-  } else if (!detailDes.length) {
-    return res.json({ alert: "Enter product details" });
-  } else if (!images.length) {
-    return res.json({ alert: "Upload atleast one image" });
-  } else if (!sizes.length) {
-    return res.json({ alert: "Select atleast one size" });
-  } else if (!actualPrice.length) {
-    return res.json({ alert: "Enter actual price" });
-  } else if (!stock.length) {
-    return res.json({ alert: "Enter stock quantity" });
-  } else if (!categories.length) {
-    return res.json({ alert: "Enter a category" });
-  } else if (!tac) {
-    return res.json({ alert: "You must agree to our terms and conditions" });
+  if (!draft) {
+    if (!productName.length) {
+      return res.json({ alert: "Enter product name" });
+    } else if (!productDes.length) {
+      return res.json({ alert: "Enter product description" });
+    } else if (!detailDes.length) {
+      return res.json({ alert: "Enter product details" });
+    } else if (!images.length) {
+      return res.json({ alert: "Upload atleast one image" });
+    } else if (!sizes.length) {
+      return res.json({ alert: "Select atleast one size" });
+    } else if (!actualPrice.length) {
+      return res.json({ alert: "Enter actual price" });
+    } else if (!stock.length) {
+      return res.json({ alert: "Enter stock quantity" });
+    } else if (!categories.length) {
+      return res.json({ alert: "Enter a category" });
+    } else if (!tac) {
+      return res.json({ alert: "You must agree to our terms and conditions" });
+    }
   } else {
     // store product in db
     let date = new Date();
