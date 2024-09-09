@@ -176,7 +176,7 @@ addBtn.addEventListener("click", () => {
 });
 
 saveDraftBtn.addEventListener("click", () => {
-  getSizes();
+  let sizes = getSizes();
   if (!productName.value.length) {
     showAlert("Enter product name");
     return;

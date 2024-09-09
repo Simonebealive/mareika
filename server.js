@@ -121,25 +121,22 @@ app.get("/add_product", (req, res) => {
 app.post("/add_product", (req, res) => {
   let { draft, productName } = req.body;
   let validationResult = isFormValid(req.body);
-  if (!validationResult) {
-    return res.json(validationResult);
-  }
   if (!draft) {
-    let date = new Date();
-    let docName = `${productName.toLowerCase()}-${date.getTime()}`;
-    db.collection("products")
-      .doc(docName)
-      .set(req.body)
-      .then((data) => {
-        res.json({ product: productName });
-      })
-      .catch((err) => {
-        res.json({ alert: "An error occured" });
-      });
-  } else {
-    // draft??
-    return;
+    if (!validationResult) {
+      return res.json(validationResult);
+    }
   }
+  let date = new Date();
+  let docName = `${productName.toLowerCase()}-${date.getTime()}`;
+  db.collection("products")
+    .doc(docName)
+    .set(req.body)
+    .then((data) => {
+      res.json({ product: productName });
+    })
+    .catch((err) => {
+      res.json({ alert: "An error occured" });
+    });
 });
 
 app.get("/s3url", (req, res) => {
