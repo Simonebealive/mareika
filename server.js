@@ -153,20 +153,23 @@ app.post("/add_product", (req, res) => {
       return res.json({ alert: "Enter a category" });
     } else if (!tac) {
       return res.json({ alert: "You must agree to our terms and conditions" });
+    } else {
+      // store product in db
+      let date = new Date();
+      let docName = `${productName.toLowerCase()}-${date.getTime()}`;
+      db.collection("products")
+        .doc(docName)
+        .set(req.body)
+        .then((data) => {
+          res.json({ product: productName });
+        })
+        .catch((err) => {
+          res.json({ alert: "An error occured" });
+        });
     }
   } else {
-    // store product in db
-    let date = new Date();
-    let docName = `${productName.toLowerCase()}-${date.getTime()}`;
-    db.collection("products")
-      .doc(docName)
-      .set(req.body)
-      .then((data) => {
-        res.json({ product: productName });
-      })
-      .catch((err) => {
-        res.json({ alert: "An error occured" });
-      });
+    // draft??
+    return;
   }
 });
 

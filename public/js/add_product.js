@@ -111,7 +111,7 @@ const categories = document.querySelector("#tags");
 const tac = document.querySelector("#tac");
 let sizes = [];
 
-const storeSizes = () => {
+const getSizes = () => {
   sizes = [];
   let sizesChecked = document.querySelectorAll(".size-checkbox");
   sizesChecked.forEach((size) => {
@@ -119,6 +119,7 @@ const storeSizes = () => {
       sizes.push(size.value);
     }
   });
+  return sizes;
 };
 
 const validForm = () => {
@@ -146,7 +147,7 @@ const validForm = () => {
   }
 };
 
-const productData = () => {
+const productData = (sizes) => {
   return {
     productName: productName.value,
     productDes: productDes.value,
@@ -164,18 +165,18 @@ const productData = () => {
 };
 
 addBtn.addEventListener("click", () => {
-  storeSizes();
+  let sizes = getSizes();
   if (!validForm()) {
     return;
   } else {
     loader.style.display = "block";
-    let data = productData();
+    let data = productData(sizes);
     sendData("/add_product", data);
   }
 });
 
 saveDraftBtn.addEventListener("click", () => {
-  storeSizes();
+  getSizes();
   if (!productName.value.length) {
     showAlert("Enter product name");
     return;

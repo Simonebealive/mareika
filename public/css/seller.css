@@ -83,7 +83,7 @@ textarea {
   background: #fff;
   width: 100%;
   display: flex;
-  justify-content: space-between;
+  justify-content: center;
   align-items: center;
   padding: 10px 20px;
   border-radius: 10px;
