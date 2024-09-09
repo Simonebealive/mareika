@@ -189,3 +189,43 @@ saveDraftBtn.addEventListener("click", () => {
     sendData("/add_product", data);
   }
 });
+
+const setFormsData = (data) => {
+  productName.value = data.productName;
+  productDes.value = data.productDes;
+  detailDes.value = data.detailDes;
+  stock.value = data.stock;
+  actualPrice.value = data.actualPrice;
+  discountPercentage.value = data.discountPercentage;
+  sellPrice.value = data.sellPrice;
+  categories.value = data.categories;
+  imagePaths = data.images;
+  imagePaths.forEach((imagePath, idx) => {
+    let label = document.querySelector(`label[for=${uploadImages[idx].id}]`);
+    label.style.backgroundImage = `url("${imagePath}")`;
+    let productImage = document.querySelector(".product-image");
+    productImage.style.backgroundImage = `url("${imagePath}")`;
+  });
+};
+// existing product detail handling
+let productId = null;
+let idProductData = null;
+if (location.pathname != "/add_product") {
+  productId = decodeURI(location.pathname.split("/").pop());
+  let productDetail = JSON.parse(sessionStorage.tempProduct || null);
+  if (!productDetail) {
+    fetch("/get-products", {
+      method: "post",
+      headers: new Headers({ "Content-Type": "application/json" }),
+      body: JSON.stringify({ email: user.email, id: productId }),
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        idProductData = data;
+        setFormsData(data);
+      })
+      .catch((err) => {
+        console.error("Failed to get product data", err);
+      });
+  }
+}

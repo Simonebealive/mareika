@@ -57,19 +57,25 @@ app.get("/", (req, res) => {
 });
 
 app.post("/get-products", (req, res) => {
-  let { email } = req.body;
-  let docRef = db.collection("products").where("email", "==", email);
+  let { email, id } = req.body;
+  let docRef = id
+    ? db.collection("products").doc(id)
+    : db.collection("products").where("email", "==", email);
   docRef.get().then((products) => {
     if (products.empty) {
       return res.json("no products");
     }
-    let productArr = [];
-    products.forEach((item) => {
-      let data = item.data();
-      data.id = item.id;
-      productArr.push(data);
-    });
-    res.json(productArr);
+    if (id) {
+      return res.json(products.data());
+    } else {
+      let productArr = [];
+      products.forEach((item) => {
+        let data = item.data();
+        data.id = item.id;
+        productArr.push(data);
+      });
+      res.json(productArr);
+    }
   });
 });
 
@@ -137,6 +143,10 @@ app.post("/add_product", (req, res) => {
     .catch((err) => {
       res.json({ alert: "An error occured" });
     });
+});
+
+app.get("/add_product/:id", (req, res) => {
+  res.sendFile(path.join(staticPath, "add_product.html"));
 });
 
 app.get("/s3url", (req, res) => {

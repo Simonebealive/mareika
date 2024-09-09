@@ -5,6 +5,7 @@ const productListingElement = document.querySelector(".product-listing");
 const applyForm = document.querySelector(".apply-form");
 const showApplyFormBtn = document.querySelector("#apply-btn");
 
+let productData = [];
 const setupProducts = () => {
   fetch("/get-products", {
     method: "post",
@@ -15,13 +16,14 @@ const setupProducts = () => {
     .then((data) => {
       loader.style.display = null;
       productListingElement.classList.remove("hide");
-      if(data == 'no products'){
-        let emptySVG = document.querySelector('.no-product-image');
-        emptySVG.classList.remove('hide');
+      if (data == "no products") {
+        let emptySVG = document.querySelector(".no-product-image");
+        emptySVG.classList.remove("hide");
       } else {
-        data.forEach(product => {
-          createProduct(product)
-        })
+        productData = data;
+        data.forEach((product) => {
+          createProduct(product);
+        });
       }
     });
 };
