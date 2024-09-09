@@ -2,7 +2,7 @@ const express = require("express");
 const admin = require("firebase-admin");
 const bcrypt = require("bcrypt");
 const path = require("path");
-const { stat } = require("fs");
+const { isFormValid } = require("./utils/server_utils.js");
 
 // firebase admin setup
 let serviceAccount = require("./.cred/mareika-ecom-firebase-adminsdk-dvj8h-84846c749c.json");
@@ -119,54 +119,23 @@ app.get("/add_product", (req, res) => {
 });
 
 app.post("/add_product", (req, res) => {
-  let {
-    productName,
-    productDes,
-    detailDes,
-    sizes,
-    stock,
-    actualPrice,
-    discountPercentage,
-    sellPrice,
-    categories,
-    tac,
-    images,
-    email,
-    draft,
-  } = req.body;
+  let { draft, productName } = req.body;
+  let validationResult = isFormValid(req.body);
+  if (!validationResult) {
+    return res.json(validationResult);
+  }
   if (!draft) {
-    if (!productName.length) {
-      return res.json({ alert: "Enter product name" });
-    } else if (!productDes.length) {
-      return res.json({ alert: "Enter product description" });
-    } else if (!detailDes.length) {
-      return res.json({ alert: "Enter product details" });
-    } else if (!images.length) {
-      return res.json({ alert: "Upload atleast one image" });
-    } else if (!sizes.length) {
-      return res.json({ alert: "Select atleast one size" });
-    } else if (!actualPrice.length) {
-      return res.json({ alert: "Enter actual price" });
-    } else if (!stock.length) {
-      return res.json({ alert: "Enter stock quantity" });
-    } else if (!categories.length) {
-      return res.json({ alert: "Enter a category" });
-    } else if (!tac) {
-      return res.json({ alert: "You must agree to our terms and conditions" });
-    } else {
-      // store product in db
-      let date = new Date();
-      let docName = `${productName.toLowerCase()}-${date.getTime()}`;
-      db.collection("products")
-        .doc(docName)
-        .set(req.body)
-        .then((data) => {
-          res.json({ product: productName });
-        })
-        .catch((err) => {
-          res.json({ alert: "An error occured" });
-        });
-    }
+    let date = new Date();
+    let docName = `${productName.toLowerCase()}-${date.getTime()}`;
+    db.collection("products")
+      .doc(docName)
+      .set(req.body)
+      .then((data) => {
+        res.json({ product: productName });
+      })
+      .catch((err) => {
+        res.json({ alert: "An error occured" });
+      });
   } else {
     // draft??
     return;
