@@ -109,11 +109,10 @@ const detailDes = document.querySelector("#des");
 const stock = document.querySelector("#stock");
 const categories = document.querySelector("#tags");
 const tac = document.querySelector("#tac");
-let sizes = [];
+const sizesChecked = document.querySelectorAll(".size-checkbox");
 
 const getSizes = () => {
-  sizes = [];
-  let sizesChecked = document.querySelectorAll(".size-checkbox");
+  let sizes = [];
   sizesChecked.forEach((size) => {
     if (size.checked) {
       sizes.push(size.value);
@@ -122,7 +121,7 @@ const getSizes = () => {
   return sizes;
 };
 
-const validForm = () => {
+const validForm = (sizes) => {
   if (!productName.value.length) {
     showAlert("Enter product name");
   } else if (!productDes.value.length) {
@@ -166,7 +165,7 @@ const productData = (sizes) => {
 
 addBtn.addEventListener("click", () => {
   let sizes = getSizes();
-  if (!validForm()) {
+  if (!validForm(sizes)) {
     return;
   } else {
     loader.style.display = "block";
@@ -184,7 +183,7 @@ saveDraftBtn.addEventListener("click", () => {
     showAlert("Select atleast one size");
     return;
   } else {
-    let data = productData();
+    let data = productData(sizes);
     data.draft = true;
     sendData("/add_product", data);
   }
@@ -206,7 +205,15 @@ const setFormsData = (data) => {
     let productImage = document.querySelector(".product-image");
     productImage.style.backgroundImage = `url("${imagePath}")`;
   });
+  let sizeElements = document.querySelectorAll(".size-checkbox");
+  let actualSizes = data.sizes;
+  sizeElements.forEach((size) => {
+    if (actualSizes.includes(size.id)) {
+      size.setAttribute("checked", true);
+    }
+  });
 };
+
 // existing product detail handling
 let productId = null;
 let idProductData = null;
@@ -227,5 +234,7 @@ if (location.pathname != "/add_product") {
       .catch((err) => {
         console.error("Failed to get product data", err);
       });
+  } else {
+    setFormsData(productDetail);
   }
 }

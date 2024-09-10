@@ -5,8 +5,9 @@ const productListingElement = document.querySelector(".product-listing");
 const applyForm = document.querySelector(".apply-form");
 const showApplyFormBtn = document.querySelector("#apply-btn");
 
-let productData = [];
+// let productData = [];
 const setupProducts = () => {
+  let productData = [];
   fetch("/get-products", {
     method: "post",
     headers: new Headers({ "Content-Type": "application/json" }),

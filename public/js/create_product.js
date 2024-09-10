@@ -2,7 +2,7 @@ let openEditor;
 
 const createProduct = (data) => {
   openEditor = () => {
-    // sessionStorage.tempProduct = JSON.stringify(data);
+    sessionStorage.tempProduct = JSON.stringify(data);
     location.href = `/add_product/${data.id}`
   }
 
