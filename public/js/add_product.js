@@ -225,7 +225,6 @@ const fetchProductData = () => {
   })
     .then((res) => res.json())
     .then((data) => {
-      idProductData = data;
       setFormsData(data);
     })
     .catch((err) => {
@@ -235,7 +234,6 @@ const fetchProductData = () => {
 
 // existing product detail handling
 let productId = null;
-let idProductData = null;
 if (location.pathname != "/add_product") {
   productId = decodeURI(location.pathname.split("/").pop());
   fetchProductData();
