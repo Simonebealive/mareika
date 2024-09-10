@@ -170,6 +170,9 @@ addBtn.addEventListener("click", () => {
   } else {
     loader.style.display = "block";
     let data = productData(sizes);
+    if (productId) {
+      data.id = productId;
+    }
     sendData("/add_product", data);
   }
 });

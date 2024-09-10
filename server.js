@@ -125,7 +125,7 @@ app.get("/add_product", (req, res) => {
 });
 
 app.post("/add_product", (req, res) => {
-  let { draft, productName } = req.body;
+  let { draft, productName, id } = req.body;
   let validationResult = isFormValid(req.body);
   if (!draft) {
     if (!validationResult) {
@@ -133,7 +133,8 @@ app.post("/add_product", (req, res) => {
     }
   }
   let date = new Date();
-  let docName = `${productName.toLowerCase()}-${date.getTime()}`;
+  let docName =
+    id == undefined ? `${productName.toLowerCase()}-${date.getTime()}` : id;
   db.collection("products")
     .doc(docName)
     .set(req.body)
