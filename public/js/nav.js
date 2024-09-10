@@ -2,20 +2,20 @@ const createNav = () => {
     let nav = document.querySelector('.navbar');
     nav.innerHTML = `
         <div class="nav">
-        <img src="img/fp.jpg" class="brand-logo" alt="">
+        <img src="../img/fp.jpg" class="brand-logo" alt="">
         <div class="nav-items">
             <div class="search">
                 <input type="text" class="search-box" placeholder="Search">
                 <button class="search-btn">search</button>
                 <a>
-                    <img src="img/fp.jpg" id="user-img" alt="">
+                    <img src="../img/user.png" id="user-img" alt="">
                     <div class="login-logout-popup hide">
                         <p class="account-info">Log in as name</p>
                         <button class="btn" id="user-btn">Log out</button>
                     </div>
                 </a>
-                <a href="#">
-                    <i class="fas fa-shopping-cart"></i>
+                <a href="/cart">
+                    <img src="../img/cart.png" alt="">
                 </a>
             </div>
         </div>

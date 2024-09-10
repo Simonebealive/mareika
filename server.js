@@ -234,6 +234,10 @@ app.post("/login", (req, res) => {
     });
 });
 
+app.get("/products/:id", (req, res) => {
+  res.sendFile(path.join(staticPath, "product.html"));
+});
+
 app.get("/404", (req, res) => {
   res.sendFile(path.join(staticPath, "404.html"));
 });
