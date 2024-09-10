@@ -217,27 +217,26 @@ const setFormsData = (data) => {
   });
 };
 
+const fetchProductData = () => {
+  fetch("/get-products", {
+    method: "post",
+    headers: new Headers({ "Content-Type": "application/json" }),
+    body: JSON.stringify({ email: user.email, id: productId }),
+  })
+    .then((res) => res.json())
+    .then((data) => {
+      idProductData = data;
+      setFormsData(data);
+    })
+    .catch((err) => {
+      console.error("Failed to get product data", err);
+    });
+};
+
 // existing product detail handling
 let productId = null;
 let idProductData = null;
 if (location.pathname != "/add_product") {
   productId = decodeURI(location.pathname.split("/").pop());
-  let productDetail = JSON.parse(sessionStorage.tempProduct || null);
-  if (!productDetail) {
-    fetch("/get-products", {
-      method: "post",
-      headers: new Headers({ "Content-Type": "application/json" }),
-      body: JSON.stringify({ email: user.email, id: productId }),
-    })
-      .then((res) => res.json())
-      .then((data) => {
-        idProductData = data;
-        setFormsData(data);
-      })
-      .catch((err) => {
-        console.error("Failed to get product data", err);
-      });
-  } else {
-    setFormsData(productDetail);
-  }
+  fetchProductData();
 }
