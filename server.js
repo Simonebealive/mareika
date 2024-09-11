@@ -20,8 +20,8 @@ dotenv.config();
 // aws parameters
 const region = "eu-north-1";
 const bucketName = "mareika-ecom";
-const accessKeyId = process.env.AWS_ACCESS_KEY;
-const secretAccessKey = process.env.AWS_SECRET_KEY;
+const accessKeyId = process.env.AWS_ACCESS_KEY || null;
+const secretAccessKey = process.env.AWS_SECRET_KEY || null;
 aws.config.update({
   region,
   accessKeyId,
@@ -57,10 +57,17 @@ app.get("/", (req, res) => {
 });
 
 app.post("/get-products", (req, res) => {
-  let { email, id } = req.body;
-  let docRef = id
-    ? db.collection("products").doc(id)
-    : db.collection("products").where("email", "==", email);
+  let { email, id, tag } = req.body;
+  let docRef;
+  if (id) {
+    docRef = db.collection("products").doc(id);
+  } else if (tag) {
+    docRef = db
+      .collection("products")
+      .where("categories", "array-contains", tag);
+  } else { 
+    docRef = db.collection("products").where("email", "==", email);
+  }
   docRef.get().then((products) => {
     if (products.empty) {
       return res.json("no products");
@@ -84,10 +91,10 @@ app.post("/delete_product", (req, res) => {
   db.collection("products")
     .doc(id)
     .delete()
-    .then((data) => {
+    .then(() => {
       res.json("success");
     })
-    .catch((err) => {
+    .catch(() => {
       res.json("error");
     });
 });
@@ -97,7 +104,7 @@ app.get("/seller", (req, res) => {
 });
 
 app.post("/seller", (req, res) => {
-  let { name, address, about, number, tac, legitInfo, email } = req.body;
+  let { about, number, tac, legitInfo, email } = req.body;
   if (!about.length || number.length < 10 || !Number(number)) {
     return res.json({ alert: "Some informations are invalid" });
   } else if (!tac || !legitInfo) {
@@ -107,13 +114,13 @@ app.post("/seller", (req, res) => {
     db.collection("sellers")
       .doc(email)
       .set(req.body)
-      .then((data) => {
+      .then(() => {
         db.collection("users")
           .doc(email)
           .update({
             seller: true,
           })
-          .then((data) => {
+          .then(() => {
             res.json({ seller: true });
           });
       });
@@ -138,10 +145,10 @@ app.post("/add_product", (req, res) => {
   db.collection("products")
     .doc(docName)
     .set(req.body)
-    .then((data) => {
+    .then(() => {
       res.json({ product: productName });
     })
-    .catch((err) => {
+    .catch(() => {
       res.json({ alert: "An error occured" });
     });
 });
@@ -189,7 +196,7 @@ app.post("/signup", (req, res) => {
             db.collection("users")
               .doc(email)
               .set(req.body)
-              .then((data) => {
+              .then(() => {
                 res.json({
                   name: req.body.name,
                   email: req.body.email,

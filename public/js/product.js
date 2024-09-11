@@ -1,3 +1,4 @@
+/* eslint-disable no-undef */
 const fetchProductData = async (productId, userEmail) => {
   if (!productId) {
     throw new Error("Provide valid productId");
@@ -11,7 +12,7 @@ const fetchProductData = async (productId, userEmail) => {
       body: JSON.stringify({ email: userEmail, id: productId }),
     });
     if (!response.ok) {
-      throw new Error("Error fatching product data", err);
+      throw new Error("Error fatching product data");
     }
     const data = await response.json();
     return data;
@@ -29,7 +30,7 @@ const setProductData = (data) => {
   const detailDescription = document.querySelector(".des");
   const price = document.querySelector(".product-price");
   images.forEach((img, i) => {
-    if (data.images[i]) {
+    if (data.images[0]) {
       img.src = data.images[i];
     } else {
       img.style.display = "none";
@@ -42,9 +43,15 @@ const setProductData = (data) => {
   price.innerHTML = `${data.actualPrice} CHF`;
 };
 
+const removeDuplicateProducts = (productsByCategory, currProduct) => {
+  return productsByCategory.filter((product) => product.images[0] != currProduct.images[0]);
+};
+
+
 let productId = null;
 let userEmail = null;
 let productDataId = null;
+let productsByCategory = null;
 
 if (location.pathname != "/products") {
   productId = decodeURI(location.pathname.split("/").pop());
@@ -65,6 +72,13 @@ if (!productId) {
     productDataId = await fetchProductData(productId, userEmail);
     if (productDataId) {
       setProductData(productDataId);
+      productsByCategory = await getProducts(productDataId.categories[0]);
+      productsByCategory = removeDuplicateProducts(productsByCategory, productDataId);
+      createProductSlider(
+        productsByCategory,
+        ".container-for-card-slider",
+        "similar products"
+      );
     } else {
       console.error("Error fatching product data");
     }

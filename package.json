@@ -16,5 +16,10 @@
     "express.js": "^1.0.0",
     "firebase-admin": "^12.4.0",
     "nodemon": "^3.1.4"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.10.0",
+    "eslint": "^9.10.0",
+    "globals": "^15.9.0"
   }
 }

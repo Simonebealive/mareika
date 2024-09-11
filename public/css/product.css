@@ -6,6 +6,13 @@
     align-items: flex-start;
 }
 
+.container-for-card-slider{
+    width: 100%;
+    display: flex;
+    justify-content: left;
+    align-items: center;
+}
+
 .product-image-details {
     width: 40%;
     max-width: 100%;

@@ -1,3 +1,4 @@
+/* eslint-disable no-undef */
 let user = JSON.parse(sessionStorage.user || null);
 let loader = document.querySelector(".loader");
 
@@ -79,7 +80,7 @@ uploadImages.forEach((fileupload, index) => {
             headers: new Headers({ "Content-Type": file.type }),
             body: file,
           })
-            .then((res) => {
+            .then(() => {
               imageUrl = url.split("?")[0];
               imagePaths[index] = imageUrl;
               let label = document.querySelector(`label[for=${fileupload.id}]`);
@@ -147,6 +148,8 @@ const validForm = (sizes) => {
 };
 
 const productData = (sizes) => {
+  let catArr = categories.value.split(",");
+  catArr = catArr.map((cat) => cat.trim());
   return {
     productName: productName.value,
     productDes: productDes.value,
@@ -156,7 +159,7 @@ const productData = (sizes) => {
     actualPrice: actualPrice.value,
     discountPercentage: discountPercentage.value,
     sellPrice: sellPrice.value,
-    categories: categories.value,
+    categories: catArr,
     tac: tac.checked,
     images: imagePaths,
     email: user.email,
@@ -217,7 +220,7 @@ const setFormsData = (data) => {
   });
 };
 
-const fetchProductData = () => {
+const fetchProductData = () => { 
   fetch("/get-products", {
     method: "post",
     headers: new Headers({ "Content-Type": "application/json" }),
