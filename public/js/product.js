@@ -1,16 +1,3 @@
-const productImages = document.querySelectorAll(".product-images img");
-const productImageSlide = document.querySelector("image-slider");
-
-let activeImageSlide = 0;
-productImages.forEach((item, i) => {
-  item.addEventListener("click", function () {
-    productImages[activeImageSlide].classList.remove("active");
-    item.classList.add("active");
-    productImageSlide.style.backgroundImage = `url('$(item.src)')`;
-    activeImageSlide = i;
-  });
-});
-
 const fetchProductData = async (productId, userEmail) => {
   if (!productId) {
     throw new Error("Provide valid productId");
@@ -30,12 +17,38 @@ const fetchProductData = async (productId, userEmail) => {
     return data;
   } catch (err) {
     console.error("Error fatching product data", err);
+    location.replace("/404");
   }
 };
 
-let productId = decodeURI(location.pathname.split("/").pop());
+const setProductData = (data) => {
+  const title = document.querySelector("title");
+  const images = document.querySelectorAll(".product-image-details img");
+  const productName = document.querySelector(".product-brand");
+  const shortDescription = document.querySelector(".product-short-des");
+  const detailDescription = document.querySelector(".des");
+  const price = document.querySelector(".product-price");
+  images.forEach((img, i) => {
+    if (data.images[i]) {
+      img.src = data.images[i];
+    } else {
+      img.style.display = "none";
+    }
+  });
+  title.innerHTML = data.productName;
+  productName.innerHTML = data.productName;
+  shortDescription.innerHTML = data.productDes;
+  detailDescription.innerHTML = data.detailDes;
+  price.innerHTML = `${data.actualPrice} CHF`;
+};
+
+let productId = null;
 let userEmail = null;
 let productDataId = null;
+
+if (location.pathname != "/products") {
+  productId = decodeURI(location.pathname.split("/").pop());
+}
 
 try {
   userEmail = JSON.parse(sessionStorage.user).email;
@@ -51,7 +64,7 @@ if (!productId) {
   (async () => {
     productDataId = await fetchProductData(productId, userEmail);
     if (productDataId) {
-      createProductId(productDataId);
+      setProductData(productDataId);
     } else {
       console.error("Error fatching product data");
     }
