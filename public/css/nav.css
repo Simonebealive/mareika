@@ -71,10 +71,10 @@
 .nav-items a {
     margin-left: 20px;
     position: relative;
-    /* display: flex; */
-    /* align-items: center; */
+    display: flex;
+    align-items: center;
     color: #383838;
-    /* font-size: 20px; */
+    font-size: 20px;
 }
 
 .nav-items a img {

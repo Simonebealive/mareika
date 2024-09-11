@@ -1,6 +1,6 @@
 const createNav = () => {
-    let nav = document.querySelector('.navbar');
-    nav.innerHTML = `
+  let nav = document.querySelector(".navbar");
+  nav.innerHTML = `
         <div class="nav">
         <img src="../img/fp.jpg" class="brand-logo" alt="">
         <div class="nav-items">
@@ -28,34 +28,33 @@ const createNav = () => {
         <li class="link-item"><a href="#" class="link">About Me</a></li>
     </ul>
     `;
-}
+};
 
 createNav();
 
-// nav pop up
-const userImageButton = document.querySelector('#user-img');
-const userPopup = document.querySelector('.login-logout-popup');
-const popupText = document.querySelector('.account-info');
-const actionBtn = document.querySelector('#user-btn');
+const userImageButton = document.querySelector("#user-img");
+const userPopup = document.querySelector(".login-logout-popup");
+const popupText = document.querySelector(".account-info");
+const actionBtn = document.querySelector("#user-btn");
 
-userImageButton.addEventListener('click', () => {
-    userPopup.classList.toggle('hide');
-})
+userImageButton.addEventListener("click", () => {
+  userPopup.classList.toggle("hide");
+});
 
 let user = JSON.parse(sessionStorage.user || null);
 if (user != null) {
-    // user logged in
-    popupText.innerHTML = `logged in as ${user.name}`
-    actionBtn.innerHTML = `log out`
-    actionBtn.addEventListener('click', () => {
-        sessionStorage.clear();
-        location.reload();
-    })
+  // user logged in
+  popupText.innerHTML = `logged in as ${user.name}`;
+  actionBtn.innerHTML = `log out`;
+  actionBtn.addEventListener("click", () => {
+    sessionStorage.clear();
+    location.reload();
+  });
 } else {
-    // user logged out
-    popupText.innerHTML = `log in to place order`
-    actionBtn.innerHTML = `log in`
-    actionBtn.addEventListener('click', () => {
-        location.href = '/login'
-    })
+  // user logged out
+  popupText.innerHTML = `log in to place order`;
+  actionBtn.innerHTML = `log in`;
+  actionBtn.addEventListener("click", () => {
+    location.href = "/login";
+  });
 }
