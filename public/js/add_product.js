@@ -147,7 +147,7 @@ const validForm = (sizes) => {
   }
 };
 
-const productData = (sizes) => {
+const getProductData = (sizes) => {
   let catArr = categories.value.split(",");
   catArr = catArr.map((cat) => cat.trim());
   return {
@@ -172,7 +172,7 @@ addBtn.addEventListener("click", () => {
     return;
   } else {
     loader.style.display = "block";
-    let data = productData(sizes);
+    let data = getProductData(sizes);
     if (productId) {
       data.id = productId;
     }
@@ -189,7 +189,7 @@ saveDraftBtn.addEventListener("click", () => {
     showAlert("Select atleast one size");
     return;
   } else {
-    let data = productData(sizes);
+    let data = getProductData(sizes);
     data.draft = true;
     sendData("/add_product", data);
   }

@@ -1,3 +1,4 @@
+/* eslint-disable no-undef */
 let loader = document.querySelector(".loader");
 let user = JSON.parse(sessionStorage.user || null);
 const becomeSellerElement = document.querySelector(".become-seller");
@@ -5,9 +6,7 @@ const productListingElement = document.querySelector(".product-listing");
 const applyForm = document.querySelector(".apply-form");
 const showApplyFormBtn = document.querySelector("#apply-btn");
 
-// let productData = [];
 const setupProducts = () => {
-  let productData = [];
   fetch("/get-products", {
     method: "post",
     headers: new Headers({ "Content-Type": "application/json" }),
@@ -21,7 +20,6 @@ const setupProducts = () => {
         let emptySVG = document.querySelector(".no-product-image");
         emptySVG.classList.remove("hide");
       } else {
-        productData = data;
         data.forEach((product) => {
           createProduct(product);
         });

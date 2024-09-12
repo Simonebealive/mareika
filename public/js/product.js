@@ -43,15 +43,16 @@ const setProductData = (data) => {
   price.innerHTML = `${data.actualPrice} CHF`;
 };
 
-const removeDuplicateProducts = (productsByCategory, currProduct) => {
-  return productsByCategory.filter((product) => product.images[0] != currProduct.images[0]);
+const removeDuplicateProducts = (similarProducts, currProduct) => {
+  return similarProducts.filter(
+    (product) => product.images[0] != currProduct.images[0]
+  );
 };
-
 
 let productId = null;
 let userEmail = null;
 let productDataId = null;
-let productsByCategory = null;
+let similarProducts = null;
 
 if (location.pathname != "/products") {
   productId = decodeURI(location.pathname.split("/").pop());
@@ -72,10 +73,13 @@ if (!productId) {
     productDataId = await fetchProductData(productId, userEmail);
     if (productDataId) {
       setProductData(productDataId);
-      productsByCategory = await getProducts(productDataId.categories[0]);
-      productsByCategory = removeDuplicateProducts(productsByCategory, productDataId);
+      similarProducts = await getProducts(productDataId.categories[0]);
+      similarProducts = removeDuplicateProducts(
+        similarProducts,
+        productDataId
+      );
       createProductSlider(
-        productsByCategory,
+        similarProducts,
         ".container-for-card-slider",
         "similar products"
       );

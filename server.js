@@ -1,3 +1,4 @@
+/* eslint-disable no-undef */
 const express = require("express");
 const admin = require("firebase-admin");
 const bcrypt = require("bcrypt");
@@ -45,7 +46,7 @@ async function generateUrl() {
 }
 
 // init express
-let staticPath = path.join(__dirname, "public");
+let staticPath = path.join(path.dirname(require.main.filename), "public");
 const app = express();
 // middlewares
 app.use(express.static(staticPath));

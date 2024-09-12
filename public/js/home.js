@@ -19,7 +19,6 @@ const setUpSlidingEffect = () => {
   });
 };
 
-
 const createProductCards = (data, parent) => {
   // parent is for search product
   let start = '<div class="product-container">';
