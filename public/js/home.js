@@ -55,7 +55,7 @@ const createProductSlider = (data, parent, title) => {
   setUpSlidingEffect();
 };
 
-const getProducts = async (tag) => {
+const getProductsByTag = async (tag) => {
   const response = await fetch("/get-products", {
     method: "POST",
     headers: new Headers({

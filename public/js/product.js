@@ -73,7 +73,7 @@ if (!productId) {
     productDataId = await fetchProductData(productId, userEmail);
     if (productDataId) {
       setProductData(productDataId);
-      similarProducts = await getProducts(productDataId.categories[0]);
+      similarProducts = await getProductsByTag(productDataId.categories[0]);
       similarProducts = removeDuplicateProducts(
         similarProducts,
         productDataId
