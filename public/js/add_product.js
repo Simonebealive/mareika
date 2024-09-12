@@ -239,5 +239,8 @@ const fetchProductData = () => {
 let productId = null;
 if (location.pathname != "/add_product") {
   productId = decodeURI(location.pathname.split("/").pop());
+  if(productId.includes(" ")){
+    productId = productId.split(" ").join("-");
+  }
   fetchProductData();
 }

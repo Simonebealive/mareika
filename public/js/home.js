@@ -26,6 +26,9 @@ const createProductCards = (data, parent) => {
   let end = "</div>";
 
   for (let i = 0; i < data.length; i++) {
+    if(!data[i].id){
+      throw new Error("Product ID not found");
+    }
     middle += `
     <div class="product-card">
       <div class="product-image">
@@ -43,6 +46,10 @@ const createProductCards = (data, parent) => {
 };
 
 const createProductSlider = (data, parent, title) => {
+  if(data.length === 0){
+    console.warn("No similar products found");
+    return;
+  }
   let slideContainer = document.querySelector(`${parent}`);
   slideContainer.innerHTML = `
     <section class="product">
