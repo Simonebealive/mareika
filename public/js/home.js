@@ -29,7 +29,7 @@ const createProductCards = (data, parent) => {
     middle += `
     <div class="product-card">
       <div class="product-image">
-        <img src=${data[i].images[0]} class="product-thumb" alt="" />
+        <img src=${data[i].images[0]} class="product-thumb" onclick="location.href = '/products/${data[i].id}'" alt="" />
       </div>
       <div class="product-info">
         <h2 class="product-brand">${data[i].productName}</h2>
