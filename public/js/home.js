@@ -80,3 +80,20 @@ const getProductsByTag = async (tag) => {
   const data = await response.json();
   return data;
 };
+
+const addToCart = (product) => {
+  let data = JSON.parse(localStorage.getItem("cart"));
+  if (data == null) {
+    data = [];
+  }
+  product = {
+    item: 1,
+    name: product.productName,
+    price: product.actualPrice,
+    des: product.productDes,
+    image: product.images[0],
+  };
+  data.push(product);
+  localStorage.setItem("cart", JSON.stringify(data));
+  return "Added"
+};

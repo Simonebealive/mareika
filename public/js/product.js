@@ -41,6 +41,11 @@ const setProductData = (data) => {
   shortDescription.innerHTML = data.productDes;
   detailDescription.innerHTML = data.detailDes;
   price.innerHTML = `${data.actualPrice} CHF`;
+
+  const cartBtn = document.querySelector(".cart-btn");
+  cartBtn.addEventListener("click", () => {
+    cartBtn.innerHTML = addToCart(data);
+  })
 };
 
 const removeDuplicateProducts = (similarProducts, currProduct) => {
