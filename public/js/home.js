@@ -20,13 +20,12 @@ const setUpSlidingEffect = () => {
 };
 
 const createProductCards = (data, parent) => {
-  // parent is for search product
   let start = '<div class="product-container">';
   let middle = "";
   let end = "</div>";
 
   for (let i = 0; i < data.length; i++) {
-    if(!data[i].id){
+    if (!data[i].id) {
       throw new Error("Product ID not found");
     }
     middle += `
@@ -42,11 +41,17 @@ const createProductCards = (data, parent) => {
     </div>
   `;
   }
-  return start + middle + end;
+  // search result
+  if (parent) {
+    let cardContainer = document.querySelector(parent);
+    cardContainer.innerHTML = start + middle + end;
+  } else {
+    return start + middle + end;
+  }
 };
 
 const createProductSlider = (data, parent, title) => {
-  if(data.length === 0){
+  if (data.length === 0) {
     console.warn("No similar products found");
     return;
   }
