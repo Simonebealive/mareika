@@ -41,7 +41,6 @@ const createProductCards = (data, parent) => {
     </div>
   `;
   }
-  // search result
   if (parent) {
     let cardContainer = document.querySelector(parent);
     cardContainer.innerHTML = start + middle + end;
@@ -61,7 +60,7 @@ const createProductSlider = (data, parent, title) => {
       <h2 class="product-category">${title}</h2>
       <button class="pre-btn"><i class="fas fa-chevron-left"></i></button>
       <button class="nxt-btn"><i class="fas fa-chevron-right"></i></button>
-      ${createProductCards(data, parent)}
+      ${createProductCards(data)}
     </section>
     `;
   setUpSlidingEffect();
