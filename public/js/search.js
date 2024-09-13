@@ -6,7 +6,7 @@ let searchResult = null;
 (async () => {
   searchResult = await getProductsByTag(searchKey);
   if (searchResult.length) {
-    createProductCards(searchResult, ".card-container");
+    createProductCards(searchResult, ".card-container", "search");
   } else {
     console.warn("No search result found");
   }

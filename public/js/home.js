@@ -19,7 +19,7 @@ const setUpSlidingEffect = () => {
   });
 };
 
-const createProductCards = (data, parent) => {
+const createProductCards = (data, parent, route) => {
   let start = '<div class="product-container">';
   let middle = "";
   let end = "</div>";
@@ -41,7 +41,7 @@ const createProductCards = (data, parent) => {
     </div>
   `;
   }
-  if (parent) {
+  if (route == "search") {
     let cardContainer = document.querySelector(parent);
     cardContainer.innerHTML = start + middle + end;
   } else {
@@ -55,6 +55,13 @@ const createProductSlider = (data, parent, title) => {
     return;
   }
   let slideContainer = document.querySelector(`${parent}`);
+  if (!slideContainer) {
+    slideContainer = document.createElement("section");
+    slideContainer.id = `${parent}`;
+    // slideContainer.classList.add("product");
+    const footer = document.querySelector("footer");
+    document.body.insertBefore(slideContainer, footer);
+  }
   slideContainer.innerHTML = `
     <section class="product">
       <h2 class="product-category">${title}</h2>
@@ -95,5 +102,5 @@ const addToCart = (product) => {
   };
   data.push(product);
   localStorage.setItem("cart", JSON.stringify(data));
-  return "Added"
+  return "Added";
 };

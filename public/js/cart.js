@@ -35,12 +35,11 @@ const setProducts = (name) => {
 };
 
 const setUpEvents = (name) => {
-  const deleteBtn = document.querySelectorAll(".sm-delete-btn");
+  const deleteBtns = document.querySelectorAll(".sm-delete-btn");
   let product = JSON.parse(localStorage.getItem(name));
-  deleteBtn.forEach((btn, i) => {
+  deleteBtns.forEach((btn, i) => {
     btn.addEventListener("click", () => {
       product = product.filter((item, index) => index != i);
-      console.log(product);
       localStorage.setItem(name, JSON.stringify(product));
       location.reload();
     });

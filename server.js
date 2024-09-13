@@ -66,7 +66,7 @@ app.post("/get-products", (req, res) => {
     docRef = db
       .collection("products")
       .where("categories", "array-contains", tag);
-  } else { 
+  } else {
     docRef = db.collection("products").where("email", "==", email);
   }
   docRef.get().then((products) => {
@@ -142,7 +142,9 @@ app.post("/add_product", (req, res) => {
   }
   let date = new Date();
   let docName =
-    id == undefined ? `${productName.toLowerCase()}-${date.getTime()}` : id;
+    id == undefined
+      ? `${productName.toLowerCase().split(" ").join("-")}-${date.getTime()}`
+      : id;
   db.collection("products")
     .doc(docName)
     .set(req.body)
@@ -248,11 +250,11 @@ app.get("/products/:id", (req, res) => {
 
 app.get("/search/:key", (req, res) => {
   res.sendFile(path.join(staticPath, "search.html"));
-})
+});
 
 app.get("/cart", (req, res) => {
   res.sendFile(path.join(staticPath, "cart.html"));
-})
+});
 
 app.get("/404", (req, res) => {
   res.sendFile(path.join(staticPath, "404.html"));

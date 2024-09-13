@@ -1,4 +1,3 @@
-/* eslint-disable no-undef */
 let user = JSON.parse(sessionStorage.user || null);
 let loader = document.querySelector(".loader");
 
@@ -220,7 +219,7 @@ const setFormsData = (data) => {
   });
 };
 
-const fetchProductData = () => { 
+const fetchProductData = () => {
   fetch("/get-products", {
     method: "post",
     headers: new Headers({ "Content-Type": "application/json" }),
@@ -239,8 +238,5 @@ const fetchProductData = () => {
 let productId = null;
 if (location.pathname != "/add_product") {
   productId = decodeURI(location.pathname.split("/").pop());
-  if(productId.includes(" ")){
-    productId = productId.split(" ").join("-");
-  }
   fetchProductData();
 }
