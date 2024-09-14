@@ -140,7 +140,7 @@
   text-transform: capitalize;
 }
 
-.checkout-btn {
+.checkout-btn, .place-order-btn {
   width: 100%;
   background: #383838;
   color: #fff;

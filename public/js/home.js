@@ -89,11 +89,14 @@ const getProductsByTag = async (tag) => {
 };
 
 const addToCart = (product) => {
+  console.log("product", product)
   let data = JSON.parse(localStorage.getItem("cart"));
   if (data == null) {
     data = [];
   }
   product = {
+    id: product.id,
+    // TODO: delete item property
     item: 1,
     name: product.productName,
     price: product.actualPrice,

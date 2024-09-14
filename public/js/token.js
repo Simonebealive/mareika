@@ -23,10 +23,19 @@ const compareToken = (token, key) => {
   return false;
 };
 
-const showAlert = (msg) => {
+const showAlert = (msg, type) => {
   let alertBox = document.querySelector(".alert-box");
   let alertMsg = document.querySelector(".alert-msg");
+  let alertImg = document.querySelector(".alert-img");
+
   alertMsg.innerHTML = msg;
+  if (type === "success") {
+    alertImg.src = "img/success.png";
+    alertMsg.style.color = "green";
+  } else {
+    alertImg.src = " img/error.png";
+    alertMsg.style.color = "red";
+  }
   alertBox.classList.add("show");
   setTimeout(() => {
     alertBox.classList.remove("show");

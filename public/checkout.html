@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <link rel="stylesheet" href="css/signup.css" />
+    <link rel="stylesheet" href="css/home.css" />
+    <link rel="stylesheet" href="css/cart.css" />
+    <link rel="stylesheet" href="css/checkout.css" />
+  </head>
+  <body>
+    <nav class="navbar"></nav>
+
+    <div class="alert-box">
+      <img src="img/error.png" class="alert-img" alt="" />
+      <p class="alert-msg">Please login to continue</p>
+    </div>
+    <div class="form">
+      <h1 class="heading">checkout</h1>
+      <p class="text">delivery address</p>
+      <input type="text" id="street" placeholder="street" />
+      <div class="three-input-container">
+        <input type="text" id="city" placeholder="city" />
+        <input type="text" id="state" placeholder="state" />
+        <input type="text" id="zip" placeholder="zip" />
+      </div>
+      <input type="text" id="country" placeholder="country" />
+    </div>
+
+    <div class="cart-section">
+        <div class="product-list">
+          <p class="section-heading">your cart</p>
+          <div class="cart">
+            
+          </div>
+        </div>
+        <div class="checkout-section">
+          <div class="checkout-box">
+            <p class="checkout-text">your total bill</p>
+            <h1 class="checkout-bill">0 CHF</h1>
+            <a class="place-order-btn">place order</a>
+          </div>
+        </div>
+      </div>
+
+    <script src="js/nav.js"></script>
+    <script src="js/home.js"></script>
+    <script src="js/cart.js"></script>
+    <script src="js/token.js"></script>
+    <script src="js/checkout.js"></script>
+  </body>
+</html>

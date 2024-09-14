@@ -4,6 +4,8 @@ const admin = require("firebase-admin");
 const bcrypt = require("bcrypt");
 const path = require("path");
 const { isFormValid } = require("./utils/server_utils.js");
+const nodemailer = require("nodemailer");
+const fs = require("fs");
 
 // firebase admin setup
 let serviceAccount = require("./.cred/mareika-ecom-firebase-adminsdk-dvj8h-84846c749c.json");
@@ -145,6 +147,7 @@ app.post("/add_product", (req, res) => {
     id == undefined
       ? `${productName.toLowerCase().split(" ").join("-")}-${date.getTime()}`
       : id;
+  req.body.id = docName;
   db.collection("products")
     .doc(docName)
     .set(req.body)
@@ -254,6 +257,59 @@ app.get("/search/:key", (req, res) => {
 
 app.get("/cart", (req, res) => {
   res.sendFile(path.join(staticPath, "cart.html"));
+});
+
+app.get("/checkout", (req, res) => {
+  res.sendFile(path.join(staticPath, "checkout.html"));
+});
+
+app.post("/order", (req, res) => {
+  let { order, email, address } = req.body;
+  if (!order.length) {
+    return res.json({ alert: "Cart is empty" });
+  }
+  if (!address) {
+    return res.json({ alert: "Address is empty" });
+  }
+  if (!email) {
+    return res.json({ alert: "Email is empty" });
+  }
+
+  let transporter = nodemailer.createTransport({
+    service: "gmail",
+    auth: {
+      user: process.env.EMAIL,
+      pass: process.env.EMAIL_PASSWORD,
+    },
+  });
+
+  const emailTemplate = fs.readFileSync(
+    path.join(staticPath, "mail.html"),
+    "utf8"
+  );
+
+  const mailOption = {
+    from: process.env.EMAIL,
+    to: email,
+    subject: "Mareika: Order Confirmation",
+    html: emailTemplate,
+  };
+
+  let date = new Date();
+  let docName = `${email}-${date.getTime()}`;
+  db.collection("orders")
+    .doc(docName)
+    .set({ order, address })
+    .then((data) => {
+      transporter.sendMail(mailOption, (err, info) => {
+        if (err) {
+          console.error(err);
+          return res.json({ alert: "error" });
+        } else {
+          return res.json({ alert: "success" });
+        }
+      });
+    });
 });
 
 app.get("/404", (req, res) => {
