@@ -276,10 +276,11 @@ app.post("/order", (req, res) => {
   }
 
   let transporter = nodemailer.createTransport({
-    service: "gmail",
+    host: "sandbox.smtp.mailtrap.io",
+    port: 2525,
     auth: {
-      user: process.env.EMAIL,
-      pass: process.env.EMAIL_PASSWORD,
+      user: "cda9f88697ea43",
+      pass: "0efb6c7dd4eb46",
     },
   });
 
@@ -289,7 +290,7 @@ app.post("/order", (req, res) => {
   );
 
   const mailOption = {
-    from: process.env.EMAIL,
+    from: "skorpijon93@gmail.com",
     to: email,
     subject: "Mareika: Order Confirmation",
     html: emailTemplate,
@@ -301,7 +302,7 @@ app.post("/order", (req, res) => {
     .doc(docName)
     .set({ order, address })
     .then((data) => {
-      transporter.sendMail(mailOption, (err, info) => {
+      transporter.sendMail(mailOption, function (err, info) {
         if (err) {
           console.error(err);
           return res.json({ alert: "error" });
