@@ -42,6 +42,7 @@ placeOrderBtn.addEventListener("click", () => {
     .then((res) => res.json())
     .then((data) => {
       if (data.alert === "success") {
+        // TODO: clear cart
         // delete localStorage.cart;
         showAlert(data.alert, "success");
       } else {

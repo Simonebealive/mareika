@@ -275,6 +275,10 @@ app.post("/order", (req, res) => {
     return res.json({ alert: "Email is empty" });
   }
 
+  let date = new Date();
+  let docName = `${email}-${date.getTime()}`;
+  const statusURL = `http://localhost:3000/order/${docName}`;
+
   let transporter = nodemailer.createTransport({
     host: "sandbox.smtp.mailtrap.io",
     port: 2525,
@@ -284,10 +288,9 @@ app.post("/order", (req, res) => {
     },
   });
 
-  const emailTemplate = fs.readFileSync(
-    path.join(staticPath, "mail.html"),
-    "utf8"
-  );
+  const emailTemplate = fs
+    .readFileSync(path.join(staticPath, "mail.html"), "utf8")
+    .replace("{{statusURL}}", statusURL);
 
   const mailOption = {
     from: "skorpijon93@gmail.com",
@@ -296,8 +299,6 @@ app.post("/order", (req, res) => {
     html: emailTemplate,
   };
 
-  let date = new Date();
-  let docName = `${email}-${date.getTime()}`;
   db.collection("orders")
     .doc(docName)
     .set({ order, address })
@@ -312,6 +313,26 @@ app.post("/order", (req, res) => {
       });
     });
 });
+
+app.post("/order/:id", (req, res) => {
+  let { id } = req.params;
+  db.collection("orders")
+    .doc(id)
+    .get()
+    .then((order) => {
+      if (!order.exists) {
+        return res.json({ alert: "Order not found" });
+      }
+      return res.json(order.data());
+    })
+    .catch(() => {
+      return res.json({ alert: "Error occured" });
+    });
+});
+
+app.get("/order/:id", (req, res) => {
+  res.sendFile(path.join(staticPath, "order.html"));
+})
 
 app.get("/404", (req, res) => {
   res.sendFile(path.join(staticPath, "404.html"));

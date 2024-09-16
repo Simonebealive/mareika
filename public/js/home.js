@@ -89,7 +89,6 @@ const getProductsByTag = async (tag) => {
 };
 
 const addToCart = (product) => {
-  console.log("product", product)
   let data = JSON.parse(localStorage.getItem("cart"));
   if (data == null) {
     data = [];
