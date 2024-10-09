@@ -30,19 +30,24 @@ span {
   display: block;
 }
 
+.product-card:hover {
+  transform: scale(1.05);
+  cursor: pointer;
+}
+
 .product-info {
-  padding: 10px
+  padding: 10px;
 }
 
 .product-brand {
-    margin-bottom: 0.5em;
-    text-align: center;
+  margin-bottom: 0.5em;
+  text-align: center;
 }
 
 .product-short-desc {
-    text-align: center;
+  text-align: center;
 }
 
 .price {
-    text-align: center;
+  text-align: center;
 }
