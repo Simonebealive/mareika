@@ -25,7 +25,7 @@ const createNav = () => {
         <li class="link-item"><a href="/landscape" class="link">Landscape</a></li>
         <li class="link-item"><a href="/portrait" class="link">Portrait</a></li>
         <li class="link-item"><a href="/abstract" class="link">Abstract</a></li>
-        <li class="link-item"><a href="#" class="link">About Me</a></li>
+        <li class="link-item"><a href="/about_me" class="link">About Me</a></li>
     </ul>
     `;
 };

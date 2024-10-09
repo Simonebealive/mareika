@@ -59,6 +59,10 @@ app.get("/", (req, res) => {
   res.sendFile(path.join(staticPath, "index.html"));
 });
 
+app.get("/about_me", (req, res) => {
+  res.sendFile(path.join(staticPath, "about_me.html"));
+});
+
 app.get("/:theme(landscape|portrait|abstract)", (req, res) => {
   const theme = req.params.theme;
   fs.readFile(path.join(staticPath, "theme.html"), "utf8", (err, data) => {
