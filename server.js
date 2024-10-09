@@ -59,8 +59,15 @@ app.get("/", (req, res) => {
   res.sendFile(path.join(staticPath, "index.html"));
 });
 
-app.get("/landscape", (req, res) => {
-  res.sendFile(path.join(staticPath, "landscape.html"));
+app.get("/:theme(landscape|portrait|abstract)", (req, res) => {
+  const theme = req.params.theme;
+  fs.readFile(path.join(staticPath, "theme.html"), "utf8", (err, data) => {
+    if (err) {
+      return res.status(500).send("An error occurred while loading the page.");
+    }
+    const modifiedHtml = data.replace("{{tag}}", theme);
+    res.send(modifiedHtml);
+  });
 });
 
 app.post("/get-products", (req, res) => {

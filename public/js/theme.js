@@ -1,5 +1,9 @@
 (async () => {
-  let tag = "landscape";
+  let tag = themeTag;
+  if (!tag) {
+    console.error("No tag found in themeTag");
+    return;
+  }
   let tagProducts = await getProductsByTag(tag);
   if (Array.isArray(tagProducts) && tagProducts.length > 0) {
     renderProducts(tagProducts);
@@ -9,7 +13,6 @@
     ).innerHTML = `<p>No products available for tag: ${tag}.</p>`;
   }
 })();
-
 
 function renderProducts(products) {
   const productContainer = document.querySelector(".product-container");
