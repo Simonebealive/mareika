@@ -21,8 +21,8 @@ const createNav = () => {
         </div>
     </div>
     <ul class="links-container">
-        <li class="link-item"><a href="#" class="link">Home</a></li>
-        <li class="link-item"><a href="#" class="link">Landscape</a></li>
+        <li class="link-item"><a href="/" class="link">Home</a></li>
+        <li class="link-item"><a href="/landscape" class="link">Landscape</a></li>
         <li class="link-item"><a href="#" class="link">Portrait</a></li>
         <li class="link-item"><a href="#" class="link">Abstract</a></li>
         <li class="link-item"><a href="#" class="link">About Me</a></li>
@@ -43,7 +43,6 @@ userImageButton.addEventListener("click", () => {
 
 let user = JSON.parse(sessionStorage.user || null);
 if (user != null) {
-  // user logged in
   popupText.innerHTML = `logged in as ${user.name}`;
   actionBtn.innerHTML = `log out`;
   actionBtn.addEventListener("click", () => {
@@ -51,7 +50,6 @@ if (user != null) {
     location.reload();
   });
 } else {
-  // user logged out
   popupText.innerHTML = `log in to place order`;
   actionBtn.innerHTML = `log in`;
   actionBtn.addEventListener("click", () => {
@@ -59,11 +57,10 @@ if (user != null) {
   });
 }
 
-//search box
 const searchBtn = document.querySelector(".search-btn");
 const searchBox = document.querySelector(".search-box");
 searchBtn.addEventListener("click", () => {
   if (searchBox.value.length) {
     location.href = `/search/${searchBox.value}`;
   }
-})
+});

@@ -59,6 +59,10 @@ app.get("/", (req, res) => {
   res.sendFile(path.join(staticPath, "index.html"));
 });
 
+app.get("/landscape", (req, res) => {
+  res.sendFile(path.join(staticPath, "landscape.html"));
+});
+
 app.post("/get-products", (req, res) => {
   let { email, id, tag } = req.body;
   let docRef;
@@ -332,7 +336,7 @@ app.post("/order/:id", (req, res) => {
 
 app.get("/order/:id", (req, res) => {
   res.sendFile(path.join(staticPath, "order.html"));
-})
+});
 
 app.get("/404", (req, res) => {
   res.sendFile(path.join(staticPath, "404.html"));
