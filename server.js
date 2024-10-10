@@ -75,7 +75,7 @@ app.get("/:theme(landscape|portrait|abstract)", (req, res) => {
 });
 
 app.post("/get-products", (req, res) => {
-  let { email, id, tag } = req.body;
+  let { id, tag, email } = req.body;
   let docRef;
   if (id) {
     docRef = db.collection("products").doc(id);
@@ -83,12 +83,14 @@ app.post("/get-products", (req, res) => {
     docRef = db
       .collection("products")
       .where("categories", "array-contains", tag);
-  } else {
+  } else if (email) {
     docRef = db.collection("products").where("email", "==", email);
+  } else {
+    throw new Error("Invalid request for /get-products");
   }
   docRef.get().then((products) => {
     if (products.empty) {
-      return res.json("no products");
+      return res.json([]);
     }
     if (id) {
       return res.json(products.data());

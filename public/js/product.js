@@ -1,15 +1,13 @@
 /* eslint-disable no-undef */
-const fetchProductData = async (productId, userEmail) => {
+const fetchProductData = async (productId) => {
   if (!productId) {
     throw new Error("Provide valid productId");
-  } else if (!userEmail) {
-    throw new Error("Provide valid userEmail");
   }
   try {
     const response = await fetch("/get-products", {
       method: "post",
       headers: new Headers({ "Content-Type": "application/json" }),
-      body: JSON.stringify({ email: userEmail, id: productId }),
+      body: JSON.stringify({ id: productId }),
     });
     if (!response.ok) {
       throw new Error("Error fatching product data");
@@ -45,7 +43,7 @@ const setProductData = (data) => {
   const cartBtn = document.querySelector(".cart-btn");
   cartBtn.addEventListener("click", () => {
     cartBtn.innerHTML = addToCart(data);
-  })
+  });
 };
 
 const removeDuplicateProducts = (similarProducts, currProduct) => {
@@ -63,26 +61,15 @@ if (location.pathname != "/products") {
   productId = decodeURI(location.pathname.split("/").pop());
 }
 
-try {
-  userEmail = JSON.parse(sessionStorage.user).email;
-} catch (err) {
-  console.error("Error parsing user session data", err);
-}
-
 if (!productId) {
   console.error("productId not found");
-} else if (!userEmail) {
-  console.error("User not found");
 } else {
   (async () => {
-    productDataId = await fetchProductData(productId, userEmail);
+    productDataId = await fetchProductData(productId);
     if (productDataId) {
       setProductData(productDataId);
       similarProducts = await getProductsByTag(productDataId.categories[0]);
-      similarProducts = removeDuplicateProducts(
-        similarProducts,
-        productDataId
-      );
+      similarProducts = removeDuplicateProducts(similarProducts, productDataId);
       createProductSlider(
         similarProducts,
         ".container-for-card-slider",

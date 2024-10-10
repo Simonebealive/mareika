@@ -1,39 +1,3 @@
-
-const products = [
-    {
-        brand: "brand",
-        description: "a short description",
-        price: "20 CHF",
-        actualPrice: "25 CHF",
-        discount: "20% off",
-        imageSrc: "./img/fp.jpg"
-    },
-    {
-        brand: "brand",
-        description: "another description",
-        price: "30 CHF",
-        actualPrice: "40 CHF",
-        discount: "10% off",
-        imageSrc: "./img/fp.jpg"
-    },
-    {
-        brand: "brand",
-        description: "another description",
-        price: "30 CHF",
-        actualPrice: "40 CHF",
-        discount: "10% off",
-        imageSrc: "./img/fp.jpg"
-    },
-    {
-        brand: "brand",
-        description: "another description",
-        price: "30 CHF",
-        actualPrice: "40 CHF",
-        discount: "10% off",
-        imageSrc: "./img/fp.jpg"
-    },
-];
-
 const productContainer = document.getElementById('productContainer');
 
 products.forEach(product => {

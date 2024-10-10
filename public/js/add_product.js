@@ -219,6 +219,7 @@ const setFormsData = (data) => {
   });
 };
 
+// TODO exists at product.js
 const fetchProductData = () => {
   fetch("/get-products", {
     method: "post",
