@@ -16,7 +16,7 @@ const setupProducts = () => {
     .then((data) => {
       loader.style.display = null;
       productListingElement.classList.remove("hide");
-      if (data == "no products") {
+      if (data.length === 0) {
         let emptySVG = document.querySelector(".no-product-image");
         emptySVG.classList.remove("hide");
       } else {
