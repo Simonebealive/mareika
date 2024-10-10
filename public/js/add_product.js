@@ -1,7 +1,6 @@
 let user = JSON.parse(sessionStorage.user || null);
 let loader = document.querySelector(".loader");
 
-// check if user is logged in
 window.onload = () => {
   if (!user) {
     location.replace("/login");
@@ -10,7 +9,6 @@ window.onload = () => {
   }
 };
 
-// price inputs
 const actualPrice = document.querySelector("#actual-price");
 const discountPercentage = document.querySelector("#discount-percentage");
 let sellPrice = document.querySelector("#sell-price");
@@ -62,7 +60,6 @@ actualPrice.addEventListener("input", () => {
   }
 });
 
-// handle upload image
 let uploadImages = document.querySelectorAll(".fileupload");
 let imagePaths = [];
 
@@ -100,7 +97,6 @@ uploadImages.forEach((fileupload, index) => {
   });
 });
 
-// form submission
 const addBtn = document.querySelector("#add-btn");
 const saveDraftBtn = document.querySelector("#save-btn");
 const productName = document.querySelector("#product-name");
@@ -162,6 +158,8 @@ const getProductData = (sizes) => {
     tac: tac.checked,
     images: imagePaths,
     email: user.email,
+    sold: false,
+    reserved: false,
   };
 };
 
@@ -172,6 +170,7 @@ addBtn.addEventListener("click", () => {
   } else {
     loader.style.display = "block";
     let data = getProductData(sizes);
+    localStorage.setItem("productData", JSON.stringify(data));
     if (productId) {
       data.id = productId;
     }
@@ -235,7 +234,6 @@ const fetchProductData = () => {
     });
 };
 
-// existing product detail handling
 let productId = null;
 if (location.pathname != "/add_product") {
   productId = decodeURI(location.pathname.split("/").pop());
