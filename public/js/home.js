@@ -92,25 +92,57 @@ const addToCart = (product) => {
   if (!product.id) {
     throw new Error("Product ID not found");
   }
-  let data = JSON.parse(localStorage.getItem("cart")) || [];
-  const productInCart = itemInCart(data, product.id);
-  if (productInCart) {
-    console.warn("Already in cart");
-    return "Item already in cart";
+
+  const isAvailable = isProductAvailable(product);
+  if (!isAvailable) {
+    console.warn("Product not available");
+    return "Out of stock";
   }
-  product = {
-    id: product.id,
-    item: 1,
-    name: product.productName,
-    price: product.actualPrice,
-    des: product.productDes,
-    image: product.images[0],
-  };
-  data.push(product);
-  localStorage.setItem("cart", JSON.stringify(data));
-  return "Added";
+
+  return sendData("/update_product", { id: product.id, reserved: true })
+    .then((reserveResponse) => {
+      if (reserveResponse.message) {
+        console.log("Product reserved successfully");
+        return "Added to cart";
+      } else {
+        console.warn("Failed to reserve product");
+        return "Failed to reserve product";
+      }
+    })
+    .catch((error) => {
+      console.error("Error reserving product:", error);
+      return "Error reserving product";
+    });
 };
 
-function itemInCart(storageData, productId) {
-  return storageData.some((item) => item.id === productId);
+const sendData = (path, data) => {
+  return fetch(path, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(data),
+  })
+    .then((response) => {
+      if (!response.ok) {
+        throw new Error("Error sending data");
+      }
+      return response.json();
+    })
+    .catch((error) => {
+      console.error("Error sending data", error);
+      return { message: "Error sending data" };
+    });
+};
+
+function isProductAvailable(data) {
+  if (data.sold) {
+    return false;
+  } else if (data.reserved) {
+    return false;
+  } else if (data.stock <= 0) {
+    return false;
+  } else {
+    return true;
+  }
 }

@@ -170,7 +170,6 @@ addBtn.addEventListener("click", () => {
   } else {
     loader.style.display = "block";
     let data = getProductData(sizes);
-    localStorage.setItem("productData", JSON.stringify(data));
     if (productId) {
       data.id = productId;
     }

@@ -14,7 +14,7 @@ const fetchProductData = async (productId) => {
     const data = await response.json();
     return data;
   } catch (err) {
-    console.error("Error fatching product data", err);
+    console.error("Error fetching product data", err);
     location.replace("/404");
   }
 };
@@ -40,15 +40,24 @@ const setProductData = (data) => {
   price.innerHTML = `${data.actualPrice} CHF`;
 
   const cartBtn = document.querySelector(".cart-btn");
-  const cartItems = JSON.parse(localStorage.getItem("cartItems")) || [];
-  if (cartItems.some((item) => item.id === data.id)) {
-    cartBtn.innerHTML = "Item already in cart";
+  const cart = JSON.parse(localStorage.getItem("cart")) || [];
+  const isAvailable = isProductAvailable(data);
+  if (!isAvailable) {
+    cartBtn.innerHTML = "Out of stock";
     cartBtn.disabled = true;
   }
   cartBtn.addEventListener("click", () => {
     if (!cartBtn.disabled) {
-      cartBtn.innerHTML = addToCart(data);
-      cartBtn.disabled = true;
+      addToCart(data)
+        .then((res) => {
+          cartBtn.innerHTML = res;
+          cartBtn.disabled = true;
+          cart.push(data);
+          localStorage.setItem("cart", JSON.stringify(cart));
+        })
+        .catch((err) => {
+          console.error("Error adding to cart", err);
+        });
     }
   });
 };

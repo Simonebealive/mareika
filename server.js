@@ -176,6 +176,28 @@ app.post("/add_product", (req, res) => {
     });
 });
 
+app.post("/update_product", (req, res) => {
+  const { id, reserved, sold } = req.body;
+  if (!id) {
+    return res.status(400).json({ message: "Product ID required for update" });
+  }
+
+  const updateData = {};
+  if (reserved !== undefined) updateData.reserved = reserved;
+  if (sold !== undefined) updateData.sold = sold;
+
+  db.collection("products")
+    .doc(String(id))
+    .update(updateData)
+    .then(() => {
+      res.json({ message: "Product updated successfully" });
+    })
+    .catch((error) => {
+      console.error("Error updating product: ", error);
+      res.status(500).json({ message: "Error updating product" });
+    });
+});
+
 app.get("/add_product/:id", (req, res) => {
   res.sendFile(path.join(staticPath, "add_product.html"));
 });
