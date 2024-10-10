@@ -89,13 +89,17 @@ const getProductsByTag = async (tag) => {
 };
 
 const addToCart = (product) => {
-  let data = JSON.parse(localStorage.getItem("cart"));
-  if (data == null) {
-    data = [];
+  if (!product.id) {
+    throw new Error("Product ID not found");
+  }
+  let data = JSON.parse(localStorage.getItem("cart")) || [];
+  const productInCart = itemInCart(data, product.id);
+  if (productInCart) {
+    console.warn("Already in cart");
+    return "Item already in cart";
   }
   product = {
     id: product.id,
-    // TODO: delete item property
     item: 1,
     name: product.productName,
     price: product.actualPrice,
@@ -106,3 +110,7 @@ const addToCart = (product) => {
   localStorage.setItem("cart", JSON.stringify(data));
   return "Added";
 };
+
+function itemInCart(storageData, productId) {
+  return storageData.some((item) => item.id === productId);
+}

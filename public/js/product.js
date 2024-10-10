@@ -1,4 +1,3 @@
-/* eslint-disable no-undef */
 const fetchProductData = async (productId) => {
   if (!productId) {
     throw new Error("Provide valid productId");
@@ -41,8 +40,16 @@ const setProductData = (data) => {
   price.innerHTML = `${data.actualPrice} CHF`;
 
   const cartBtn = document.querySelector(".cart-btn");
+  const cartItems = JSON.parse(localStorage.getItem("cartItems")) || [];
+  if (cartItems.some((item) => item.id === data.id)) {
+    cartBtn.innerHTML = "Item already in cart";
+    cartBtn.disabled = true;
+  }
   cartBtn.addEventListener("click", () => {
-    cartBtn.innerHTML = addToCart(data);
+    if (!cartBtn.disabled) {
+      cartBtn.innerHTML = addToCart(data);
+      cartBtn.disabled = true;
+    }
   });
 };
 
@@ -53,7 +60,6 @@ const removeDuplicateProducts = (similarProducts, currProduct) => {
 };
 
 let productId = null;
-let userEmail = null;
 let productDataId = null;
 let similarProducts = null;
 
