@@ -40,7 +40,6 @@ const setProductData = (data) => {
   price.innerHTML = `${data.actualPrice} CHF`;
 
   const cartBtn = document.querySelector(".cart-btn");
-  const cart = JSON.parse(localStorage.getItem("cart")) || [];
   const isAvailable = isProductAvailable(data);
   if (!isAvailable) {
     cartBtn.innerHTML = "Out of stock";
@@ -52,8 +51,9 @@ const setProductData = (data) => {
         .then((res) => {
           cartBtn.innerHTML = res;
           cartBtn.disabled = true;
-          cart.push(data);
-          localStorage.setItem("cart", JSON.stringify(cart));
+          const currentCart = JSON.parse(localStorage.getItem("cart")) || [];
+          currentCart.push(data);
+          localStorage.setItem("cart", JSON.stringify(currentCart));
         })
         .catch((err) => {
           console.error("Error adding to cart", err);
