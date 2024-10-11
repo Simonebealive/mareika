@@ -87,9 +87,13 @@ app.post("/reservations", async (req, res) => {
 });
 
 app.get("/reservations/:id", async (req, res) => {
-  const { id } = req.params;
+  const id = req.params.id;
   try {
     const reservation = await db.collection("reservations").doc(id).get();
+    if (!reservation.exists) {
+      return res.status(404).json({ message: "Reservation not found" });
+    }
+    res.status(200).json(reservation.data());
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
