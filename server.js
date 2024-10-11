@@ -59,6 +59,33 @@ app.get("/", (req, res) => {
   res.sendFile(path.join(staticPath, "index.html"));
 });
 
+app.post("/reservations", async (req, res) => {
+  const { productId, userId } = req.body;
+  const expiresAt = admin.firestore.Timestamp.fromDate(
+    new Date(Date.now() + 30 * 60 * 1000)
+  );
+  try {
+    const existingReservation = await db
+      .collection("reservations")
+      .where("productId", "==", productId)
+      .get();
+    if (!existingReservation.empty) {
+      return res.status(400).json({ message: "Reservation already exists" });
+    }
+    const reservationRef = await db.collection("reservations").add({
+      productId,
+      userId,
+      expiresAt,
+    });
+    res.status(200).json({
+      message: "Reservation created successfully",
+      id: reservationRef.id,
+    });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+});
+
 app.get("/about_me", (req, res) => {
   res.sendFile(path.join(staticPath, "about_me.html"));
 });
