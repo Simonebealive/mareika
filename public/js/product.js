@@ -69,7 +69,7 @@ const getOrCreateGuestId = () => {
     return guestId;
   } else {
     const timeNow = Date.now();
-    const randomNr = crypto.randomUUID().slice(0, 8);
+    const randomNr = crypto.randomUUID();
     guestId = `${timeNow}-${randomNr}`;
     localStorage.setItem("guestId", guestId);
     return guestId;

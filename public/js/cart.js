@@ -1,10 +1,16 @@
-/* eslint-disable no-unused-vars */
 const createSmallCards = (data) => {
-  const imageUrl =
-    Array.isArray(data.images) && data.images.length > 0
-      ? data.images[0]
-      : "img/no-image.png";
-  return `
+  if (!data) {
+    return `
+    <div class="sm-product">
+      <img src="img/empty-cart.png" class="sm-product-img" alt="" />
+    </div>
+    `;
+  } else {
+    const imageUrl =
+      Array.isArray(data.images) && data.images.length > 0
+        ? data.images[0]
+        : "img/no-image.png";
+    return `
           <div class="sm-product">
             <img src="${imageUrl}" class="sm-product-img" alt="" />
             <div class="sm-text">
@@ -17,6 +23,7 @@ const createSmallCards = (data) => {
             </button>
           </div>
     `;
+  }
 };
 
 let totalBill = 0;
@@ -33,8 +40,7 @@ const setProducts = (name) => {
     console.error(`Error parsing JSON from localStorage: ${error}`);
     data = null;
   }
-
-  if (data == null || data.length == 0) {
+  if (data == null || data.length == 0 || data.includes(null)) {
     console.log(`No data found for ${name}, showing empty cart image`);
     element.innerHTML = `<img src="img/empty-cart.png" class="empty-img" alt="" />`;
   } else {
