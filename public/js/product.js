@@ -47,6 +47,7 @@ const setProductData = (data) => {
   }
   cartBtn.addEventListener("click", () => {
     if (!cartBtn.disabled) {
+      const guestId = getOrCreateGuestId();
       addToCart(data)
         .then((res) => {
           cartBtn.innerHTML = res;
@@ -60,6 +61,19 @@ const setProductData = (data) => {
         });
     }
   });
+};
+
+const getOrCreateGuestId = () => {
+  let guestId = localStorage.getItem("guestId");
+  if (guestId) {
+    return guestId;
+  } else {
+    const timeNow = Date.now();
+    const randomNr = crypto.randomUUID().slice(0, 8);
+    guestId = `${timeNow}-${randomNr}`;
+    localStorage.setItem("guestId", guestId);
+    return guestId;
+  }
 };
 
 const removeDuplicateProducts = (similarProducts, currProduct) => {
