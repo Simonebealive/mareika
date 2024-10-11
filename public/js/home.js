@@ -101,7 +101,7 @@ const addToCart = (product) => {
 
   return sendData("/update_product", { id: product.id, reserved: true })
     .then((reserveResponse) => {
-      if (reserveResponse.message) {
+      if (reserveResponse.message === "Success") {
         console.log("Product reserved successfully");
         return "Added to cart";
       } else {
@@ -115,8 +115,8 @@ const addToCart = (product) => {
     });
 };
 
-const sendData = (path, data) => {
-  return fetch(path, {
+const sendData = async (path, data) => {
+  return await fetch(path, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",

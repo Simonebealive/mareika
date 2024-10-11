@@ -163,7 +163,7 @@ const getProductData = (sizes) => {
   };
 };
 
-addBtn.addEventListener("click", () => {
+addBtn.addEventListener("click", async () => {
   let sizes = getSizes();
   if (!validForm(sizes)) {
     return;
@@ -173,11 +173,20 @@ addBtn.addEventListener("click", () => {
     if (productId) {
       data.id = productId;
     }
-    sendData("/add_product", data);
+    try {
+      const response = await sendData("/add_product", data);
+      if (response.product) {
+        location.href = "/seller";
+      }
+    } catch (err) {
+      showAlert("An error occured while adding the product");
+    } finally {
+      loader.style.display = "none";
+    }
   }
 });
 
-saveDraftBtn.addEventListener("click", () => {
+saveDraftBtn.addEventListener("click", async () => {
   let sizes = getSizes();
   if (!productName.value.length) {
     showAlert("Enter product name");
@@ -188,7 +197,16 @@ saveDraftBtn.addEventListener("click", () => {
   } else {
     let data = getProductData(sizes);
     data.draft = true;
-    sendData("/add_product", data);
+    try {
+      const response = await sendData("/add_product", data);
+      if (response.product) {
+        location.href = "/seller";
+      }
+    } catch (err) {
+      showAlert("An error occured while saving the draft");
+    } finally {
+      loader.style.display = "none";
+    }
   }
 });
 

@@ -190,7 +190,7 @@ app.post("/update_product", (req, res) => {
     .doc(String(id))
     .update(updateData)
     .then(() => {
-      res.json({ message: "Product updated successfully" });
+      res.json({ message: "Success" });
     })
     .catch((error) => {
       console.error("Error updating product: ", error);
