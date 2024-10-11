@@ -62,7 +62,8 @@ app.get("/", (req, res) => {
 app.post("/reservations", async (req, res) => {
   const { productId, userId } = req.body;
   const expiresAt = admin.firestore.Timestamp.fromDate(
-    new Date(Date.now() + 30 * 60 * 1000)
+    // 10 minutes
+    new Date(Date.now() + 10 * 60 * 1000)
   );
   try {
     const existingReservation = await db
@@ -98,6 +99,23 @@ app.get("/reservations/:id", async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 });
+
+async function cleanUpExpiredReservations() {
+  const now = admin.firestore.Timestamp.now();
+  const expiredReservations = await db
+    .collection("reservations")
+    .where("expiresAt", "<=", now)
+    .get();
+  const batch = db.batch();
+  expiredReservations.forEach((reservation) => {
+    batch.delete(reservation.ref);
+  });
+  await batch.commit();
+  console.log(`${expiredReservations.size} expired reservations cleaned up`);
+}
+
+// clean up expired reservations every 5 minutes
+setInterval(cleanUpExpiredReservations, 5 * 60 * 1000);
 
 app.get("/about_me", (req, res) => {
   res.sendFile(path.join(staticPath, "about_me.html"));
