@@ -67,20 +67,29 @@ app.post("/reservations", async (req, res) => {
   try {
     const existingReservation = await db
       .collection("reservations")
-      .where("productId", "==", productId)
+      .doc(productId)
       .get();
-    if (!existingReservation.empty) {
+    if (existingReservation.exists) {
       return res.status(400).json({ message: "Reservation already exists" });
     }
-    const reservationRef = await db.collection("reservations").add({
+    await db.collection("reservations").doc(productId).set({
       productId,
       userId,
       expiresAt,
     });
     res.status(200).json({
       message: "Reservation created successfully",
-      id: reservationRef.id,
+      id: productId,
     });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+});
+
+app.get("/reservations/:id", async (req, res) => {
+  const { id } = req.params;
+  try {
+    const reservation = await db.collection("reservations").doc(id).get();
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
