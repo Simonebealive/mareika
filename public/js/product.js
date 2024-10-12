@@ -1,3 +1,5 @@
+import { isProductAvailable, getProductsByTag, sendData } from "./utils.js";
+
 const fetchProductData = async (productId) => {
   if (!productId) {
     throw new Error("Provide valid productId");
@@ -63,6 +65,33 @@ const setProductData = (data) => {
   });
 };
 
+const addToCart = (product) => {
+  if (!product.id) {
+    throw new Error("Product ID not found");
+  }
+
+  const isAvailable = isProductAvailable(product);
+  if (!isAvailable) {
+    console.warn("Product not available");
+    return "Out of stock";
+  }
+
+  return sendData("/update_product", { id: product.id, reserved: true })
+    .then((reserveResponse) => {
+      if (reserveResponse.message === "Success") {
+        console.log("Product reserved successfully");
+        return "Added to cart";
+      } else {
+        console.warn("Failed to reserve product");
+        return "Failed to reserve product";
+      }
+    })
+    .catch((error) => {
+      console.error("Error reserving product:", error);
+      return "Error reserving product";
+    });
+};
+
 const getOrCreateGuestId = () => {
   let guestId = localStorage.getItem("guestId");
   if (guestId) {
@@ -109,3 +138,4 @@ if (!productId) {
     }
   })();
 }
+

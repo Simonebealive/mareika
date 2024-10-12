@@ -1,14 +1,26 @@
 /* eslint-disable no-undef */
-const express = require("express");
-const admin = require("firebase-admin");
-const bcrypt = require("bcrypt");
-const path = require("path");
-const { isFormValid } = require("./utils/server_utils.js");
-const nodemailer = require("nodemailer");
-const fs = require("fs");
+import express from "express";
+import admin from "firebase-admin";
+import bcrypt from "bcrypt";
+import path from "path";
+import { isFormValid } from "./public/js/utils.js";
+import nodemailer from "nodemailer";
+import fs from "fs";
+import { fileURLToPath } from "url";
+import { readFile } from "fs/promises";
+
+// Get the directory name of the current module
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 // firebase admin setup
-let serviceAccount = require("./.cred/mareika-ecom-firebase-adminsdk-dvj8h-84846c749c.json");
+const serviceAccountPath = path.join(
+  __dirname,
+  ".cred",
+  "mareika-ecom-firebase-adminsdk-dvj8h-84846c749c.json"
+);
+const serviceAccount = JSON.parse(await readFile(serviceAccountPath, "utf8"));
+
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount),
 });
@@ -16,8 +28,8 @@ admin.initializeApp({
 let db = admin.firestore();
 
 // aws config
-const aws = require("aws-sdk");
-const dotenv = require("dotenv");
+import aws from "aws-sdk";
+import dotenv from "dotenv";
 dotenv.config();
 
 // aws parameters
@@ -48,7 +60,7 @@ async function generateUrl() {
 }
 
 // init express
-let staticPath = path.join(path.dirname(require.main.filename), "public");
+let staticPath = path.join(__dirname, "public");
 const app = express();
 // middlewares
 app.use(express.static(staticPath));

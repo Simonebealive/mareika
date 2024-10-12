@@ -1,3 +1,4 @@
+import { getProductsByTag } from "./utils.js";
 // TODO: fetch existing categories before rendering the page
 (async () => {
   let tag1 = "landscape";

@@ -1,4 +1,5 @@
-/* eslint-disable no-undef */
+import { sendData, processData } from "./utils.js";
+
 let loader = document.querySelector(".loader");
 let user = JSON.parse(sessionStorage.user || null);
 const becomeSellerElement = document.querySelector(".become-seller");
@@ -79,6 +80,13 @@ applyFormBtn.addEventListener("click", () => {
       tac: tac.checked,
       legitInfo: legitInfo.checked,
       email: JSON.parse(sessionStorage.user).email,
+    }).then(data => {
+      processData(data, loader);
+    }).catch(error => {
+      console.error("Error:", error);
+      showAlert("An error occurred while submitting the form");
+    }).finally(() => {
+      loader.style.display = "none";
     });
   }
 });

@@ -1,3 +1,5 @@
+import { sendData } from "./utils.js";
+
 const createSmallCards = (data) => {
   if (!data) {
     return `

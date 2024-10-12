@@ -1,3 +1,5 @@
+import { sendData } from "./utils.js";
+
 let user = JSON.parse(sessionStorage.user || null);
 let loader = document.querySelector(".loader");
 

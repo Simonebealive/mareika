@@ -1,3 +1,5 @@
+import { getProductsByTag } from "./utils.js";
+
 (async () => {
   let tag = themeTag;
   if (!tag) {

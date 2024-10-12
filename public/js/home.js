@@ -1,5 +1,3 @@
-/* eslint-disable no-unused-vars */
-
 const setUpSlidingEffect = () => {
   const productContainers = [
     ...document.querySelectorAll(".product-container"),
@@ -73,76 +71,4 @@ const createProductSlider = (data, parent, title) => {
   setUpSlidingEffect();
 };
 
-const getProductsByTag = async (tag) => {
-  const response = await fetch("/get-products", {
-    method: "POST",
-    headers: new Headers({
-      "Content-Type": "application/json",
-    }),
-    body: JSON.stringify({ tag: tag }),
-  });
-  if (!response.ok) {
-    throw new Error("Error fetching products");
-  }
-  const data = await response.json();
-  return data;
-};
 
-const addToCart = (product) => {
-  if (!product.id) {
-    throw new Error("Product ID not found");
-  }
-
-  const isAvailable = isProductAvailable(product);
-  if (!isAvailable) {
-    console.warn("Product not available");
-    return "Out of stock";
-  }
-
-  return sendData("/update_product", { id: product.id, reserved: true })
-    .then((reserveResponse) => {
-      if (reserveResponse.message === "Success") {
-        console.log("Product reserved successfully");
-        return "Added to cart";
-      } else {
-        console.warn("Failed to reserve product");
-        return "Failed to reserve product";
-      }
-    })
-    .catch((error) => {
-      console.error("Error reserving product:", error);
-      return "Error reserving product";
-    });
-};
-
-const sendData = async (path, data) => {
-  return await fetch(path, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify(data),
-  })
-    .then((response) => {
-      if (!response.ok) {
-        throw new Error("Error sending data");
-      }
-      return response.json();
-    })
-    .catch((error) => {
-      console.error("Error sending data", error);
-      return { message: "Error sending data" };
-    });
-};
-
-function isProductAvailable(data) {
-  if (data.sold) {
-    return false;
-  } else if (data.reserved) {
-    return false;
-  } else if (data.stock <= 0) {
-    return false;
-  } else {
-    return true;
-  }
-}
