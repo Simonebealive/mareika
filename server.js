@@ -75,27 +75,39 @@ app.post("/reservations", async (req, res) => {
   const { productId, userId } = req.body;
   const expiresAt = admin.firestore.Timestamp.fromDate(
     // 10 minutes
-    new Date(Date.now() + 10 * 60 * 1000)
+    new Date(Date.now() + 60 * 1000)
   );
   try {
-    const existingReservation = await db
-      .collection("reservations")
-      .doc(productId)
-      .get();
-    if (existingReservation.exists) {
-      return res.status(400).json({ message: "Reservation already exists" });
-    }
-    await db.collection("reservations").doc(productId).set({
-      productId,
-      userId,
-      expiresAt,
+    await db.runTransaction(async (transaction) => {
+      const productRef = db.collection("products").doc(productId);
+      const reservationRef = db.collection("reservations").doc(productId);
+
+      const productDoc = await transaction.get(productRef);
+      const reservationDoc = await transaction.get(reservationRef);
+
+      if (!productDoc.exists) {
+        throw new Error("Product not found");
+      }
+
+      if (reservationDoc.exists) {
+        throw new Error("Product already reserved");
+      }
+
+      transaction.set(reservationRef, {
+        productId,
+        userId,
+        expiresAt,
+      });
+      transaction.update(productRef, { reserved: true });
     });
+
     res.status(200).json({
       message: "Reservation created successfully",
       id: productId,
     });
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    console.error("Reservation error:", error);
+    res.status(400).json({ message: error.message });
   }
 });
 
@@ -119,15 +131,20 @@ async function cleanUpExpiredReservations() {
     .where("expiresAt", "<=", now)
     .get();
   const batch = db.batch();
-  expiredReservations.forEach((reservation) => {
+  for (const reservation of expiredReservations.docs) {
+    const reservationData = reservation.data();
+    const productRef = db.collection("products").doc(reservationData.productId);
     batch.delete(reservation.ref);
-  });
+    batch.update(productRef, { reserved: false });
+  }
   await batch.commit();
-  console.log(`${expiredReservations.size} expired reservations cleaned up`);
+  console.log(
+    `${expiredReservations.size} expired reservations cleaned up and products unreserved`
+  );
 }
 
 // clean up expired reservations every 5 minutes
-setInterval(cleanUpExpiredReservations, 5 * 60 * 1000);
+setInterval(cleanUpExpiredReservations, 60 * 1000);
 
 app.get("/about_me", (req, res) => {
   res.sendFile(path.join(staticPath, "about_me.html"));

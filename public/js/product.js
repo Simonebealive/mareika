@@ -46,21 +46,25 @@ const setProductData = (data) => {
   if (!isAvailable) {
     cartBtn.innerHTML = "Out of stock";
     cartBtn.disabled = true;
+    cartBtn.style.cursor = "default";
   }
-  cartBtn.addEventListener("click", () => {
+  cartBtn.addEventListener("click", async () => {
     if (!cartBtn.disabled) {
       const guestId = getOrCreateGuestId();
-      addToCart(data)
-        .then((res) => {
-          cartBtn.innerHTML = res;
+      try {
+        const response = await sendData("/reservations", { productId: data.id, userId: guestId });
+        if (response.message === "Reservation created successfully") {
+          cartBtn.innerHTML = "Added to cart";
           cartBtn.disabled = true;
-          const currentCart = JSON.parse(localStorage.getItem("cart")) || [];
-          currentCart.push(data);
-          localStorage.setItem("cart", JSON.stringify(currentCart));
-        })
-        .catch((err) => {
-          console.error("Error adding to cart", err);
-        });
+          console.log("Reservation created successfully");
+        } else {
+          console.warn("Failed to create reservation:", response.message);
+          cartBtn.innerHTML = "Try again";
+        }
+      } catch (error) {
+        console.error("Error creating reservation:", error);
+        cartBtn.innerHTML = "Error occurred";
+      }
     }
   });
 };
@@ -138,4 +142,3 @@ if (!productId) {
     }
   })();
 }
-
