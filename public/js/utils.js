@@ -43,39 +43,25 @@ export async function sendData(path, data) {
     });
 }
 
-export function processData(data, loader) {
-  if (loader) {
-    loader.style.display = null;
+export function isSignUpValid({ name, email, password, number, tac }) {
+  if (name.length < 3) {
+    return { valid: false, alert: "name must be at least three letters long" };
+  } else if (!email.length) {
+    return { valid: false, alert: "Enter an email address" };
+  } else if (password.length < 8) {
+    return {
+      valid: false,
+      alert: "Password has to be at least 8 characters long!",
+    };
+  } else if (!number.length) {
+    return { valid: false, alert: "Enter a phone number" };
+  } else if (!Number(number) || number.length < 10) {
+    return { valid: false, alert: "Number invalid!" };
+  } else if (!tac) {
+    return { valid: false, alert: "Agree to the terms and conditions" };
   }
-  if (data.alert) {
-    showAlert(data.alert);
-  } else if (data.name) {
-    // create authToken
-    data.authToken = generateToken(data.email);
-    sessionStorage.user = JSON.stringify(data);
-    location.replace("/");
-  } else if (data.seller) {
-    // seller page
-    let user = JSON.parse(sessionStorage.user);
-    user.seller = true;
-    sessionStorage.user = JSON.stringify(user);
-    location.reload();
-  } else if (data.product) {
-    location.href = "/seller";
-  }
+  return { valid: true };
 }
-
-let char = `123abcde.fmnopqlABCDE@FJKLMNOPQRSTUVWXYZ456789stuvwxyz0!#$%&ijkrgh'*+-/=?^_${"`"}{|}~`;
-
-export const generateToken = (key) => {
-  let token = "";
-  for (let i = 0; i < key.length; i++) {
-    let index = char.indexOf(key[i]) || char.length / 2;
-    let randomIndex = Math.floor(Math.random() * index);
-    token += char[randomIndex] + char[index - randomIndex];
-  }
-  return token;
-};
 
 export const isFormValid = (requestBody) => {
   let blackList = ["discountPercentage", "sellPrice", "tac", "email", "draft"];
@@ -91,4 +77,23 @@ export const isFormValid = (requestBody) => {
     }
   }
   return true;
+};
+
+export const showAlert = (msg, type) => {
+  let alertBox = document.querySelector(".alert-box");
+  let alertMsg = document.querySelector(".alert-msg");
+  let alertImg = document.querySelector(".alert-img");
+
+  alertMsg.innerHTML = msg;
+  if (type === "success") {
+    alertImg.src = "img/success.png";
+    alertMsg.style.color = "green";
+  } else {
+    alertImg.src = " img/error.png";
+    alertMsg.style.color = "red";
+  }
+  alertBox.classList.add("show");
+  setTimeout(() => {
+    alertBox.classList.remove("show");
+  }, 3000);
 };

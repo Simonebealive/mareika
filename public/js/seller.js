@@ -1,4 +1,4 @@
-import { sendData, processData } from "./utils.js";
+import { sendData } from "./utils.js";
 
 let loader = document.querySelector(".loader");
 let user = JSON.parse(sessionStorage.user || null);
@@ -28,22 +28,22 @@ const setupProducts = () => {
     });
 };
 
-window.onload = () => {
-  if (user) {
-    if (compareToken(user.authToken, user.email)) {
-      if (!user.seller) {
-        becomeSellerElement.classList.remove("hide");
-      } else {
-        loader.style.display = "block";
-        setupProducts();
-      }
-    } else {
-      location.replace("/login");
-    }
-  } else {
-    location.replace("/login");
-  }
-};
+// window.onload = () => {
+//   if (user) {
+//     if (compareToken(user.authToken, user.email)) {
+//       if (!user.seller) {
+        // becomeSellerElement.classList.remove("hide");
+//       } else {
+//         loader.style.display = "block";
+//         setupProducts();
+//       }
+//     } else {
+//       location.replace("/login");
+//     }
+//   } else {
+//     location.replace("/login");
+//   }
+// };
 
 showApplyFormBtn.addEventListener("click", () => {
   becomeSellerElement.classList.add("hide");
@@ -81,7 +81,7 @@ applyFormBtn.addEventListener("click", () => {
       legitInfo: legitInfo.checked,
       email: JSON.parse(sessionStorage.user).email,
     }).then(data => {
-      processData(data, loader);
+      
     }).catch(error => {
       console.error("Error:", error);
       showAlert("An error occurred while submitting the form");

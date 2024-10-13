@@ -1,13 +1,24 @@
-/* eslint-disable no-undef */
+import jwt from "jsonwebtoken";
 import express from "express";
 import admin from "firebase-admin";
 import bcrypt from "bcrypt";
 import path from "path";
-import { isFormValid } from "./public/js/utils.js";
+import { isSignUpValid } from "./public/js/utils.js";
 import nodemailer from "nodemailer";
 import fs from "fs";
 import { fileURLToPath } from "url";
 import { readFile } from "fs/promises";
+import dotenv from "dotenv";
+import aws from "aws-sdk";
+
+dotenv.config();
+
+// middleware for authentication
+const JWT_SECRET = process.env.JWT_SECRET || null;
+
+if (!process.env.JWT_SECRET) {
+  console.warn('WARNING: JWT_SECRET is not set.');
+}
 
 // Get the directory name of the current module
 const __filename = fileURLToPath(import.meta.url);
@@ -26,11 +37,6 @@ admin.initializeApp({
 });
 
 let db = admin.firestore();
-
-// aws config
-import aws from "aws-sdk";
-import dotenv from "dotenv";
-dotenv.config();
 
 // aws parameters
 const region = "eu-north-1";
@@ -197,13 +203,10 @@ app.get("/seller", (req, res) => {
 });
 
 app.post("/seller", (req, res) => {
-  let { about, number, tac, legitInfo, email } = req.body;
-  if (!about.length || number.length < 10 || !Number(number)) {
-    return res.json({ alert: "Some informations are invalid" });
-  } else if (!tac || !legitInfo) {
-    return res.json({ alert: "Boxes must be checked!" });
+  let { email } = req.body;
+  if (!email.length) {
+    return res.json({ alert: "Email is required" });
   } else {
-    // store seller in db
     db.collection("sellers")
       .doc(email)
       .set(req.body)
@@ -284,22 +287,10 @@ app.get("/signup", (req, res) => {
 
 app.post("/signup", (req, res) => {
   let { name, email, password, number, tac } = req.body;
-  if (name.length < 3) {
-    return res.json({ alert: "name must be at least two letters long" });
-  } else if (!email.length) {
-    return res.json({ alert: "Enter a email address" });
-  } else if (password.length < 8) {
-    return res.json({
-      alert: "Password has to be at least 8 characters long!",
-    });
-  } else if (!number.length) {
-    return res.json({ alert: "Enter a phone number" });
-  } else if (!Number(number) || number.length < 10) {
-    return res.json({ alert: "Number invalid!" });
-  } else if (!tac) {
-    return res.json({ alert: "Agree to the the terms and conditions" });
+  let validationResult = isSignUpValid({ name, email, password, number, tac });
+  if (!validationResult.valid) {
+    return res.json({ alert: validationResult.alert });
   }
-  // store user in db
   db.collection("users")
     .doc(email)
     .get()
@@ -315,9 +306,7 @@ app.post("/signup", (req, res) => {
               .set(req.body)
               .then(() => {
                 res.json({
-                  name: req.body.name,
-                  email: req.body.email,
-                  seller: req.body.seller,
+                  message: "success",
                 });
               });
           });
@@ -332,29 +321,50 @@ app.get("/login", (req, res) => {
 
 app.post("/login", (req, res) => {
   let { email, password } = req.body;
-  if (!email.length || !password.length) {
-    return res.json({ alert: "please fill out the form" });
+  if (!email || !password) {
+    return res.status(400).json({ alert: "Please fill out the form" });
   }
   db.collection("users")
     .doc(email)
     .get()
     .then((user) => {
       if (!user.exists) {
-        return res.json({ alert: "email does not exist" });
+        return res.status(404).json({ alert: "Email does not exist" });
       } else {
         bcrypt.compare(password, user.data().password, (err, result) => {
+          if (err) {
+            console.error("Error comparing passwords:", err);
+            return res.status(500).json({ alert: "An error occurred during login" });
+          }
           if (result) {
             let data = user.data();
-            return res.json({
-              name: data.name,
-              email: data.email,
-              seller: data.seller,
-            });
+            try {
+              const token = jwt.sign(
+                {
+                  email: data.email,
+                  seller: data.seller,
+                },
+                JWT_SECRET,
+                { expiresIn: "1h" }
+              );
+              return res.json({
+                token: token,
+                email: data.email,
+                seller: data.seller,
+              });
+            } catch (jwtError) {
+              console.error("Error creating JWT:", jwtError);
+              return res.status(500).json({ alert: "An error occurred during login" });
+            }
           } else {
-            return res.json({ alert: "password is incorrect" });
+            return res.status(401).json({ alert: "Password is incorrect" });
           }
         });
       }
+    })
+    .catch((dbError) => {
+      console.error("Database error:", dbError);
+      res.status(500).json({ alert: "An error occurred while accessing the database" });
     });
 });
 
