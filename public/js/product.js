@@ -52,7 +52,10 @@ const setProductData = (data) => {
     if (!cartBtn.disabled) {
       const guestId = getOrCreateGuestId();
       try {
-        const response = await sendData("/reservations", { productId: data.id, userId: guestId });
+        const response = await sendData("/reservations", {
+          productId: data.id,
+          userId: guestId,
+        });
         if (response.message === "Reservation created successfully") {
           cartBtn.innerHTML = "Added to cart";
           cartBtn.disabled = true;
@@ -79,21 +82,6 @@ const addToCart = (product) => {
     console.warn("Product not available");
     return "Out of stock";
   }
-
-  return sendData("/update_product", { id: product.id, reserved: true })
-    .then((reserveResponse) => {
-      if (reserveResponse.message === "Success") {
-        console.log("Product reserved successfully");
-        return "Added to cart";
-      } else {
-        console.warn("Failed to reserve product");
-        return "Failed to reserve product";
-      }
-    })
-    .catch((error) => {
-      console.error("Error reserving product:", error);
-      return "Error reserving product";
-    });
 };
 
 const getOrCreateGuestId = () => {

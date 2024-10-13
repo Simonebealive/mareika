@@ -161,7 +161,6 @@ const getProductData = (sizes) => {
     images: imagePaths,
     email: user.email,
     sold: false,
-    reserved: false,
   };
 };
 

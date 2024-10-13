@@ -1,8 +1,6 @@
 export function isProductAvailable(data) {
   if (data.sold) {
     return false;
-  } else if (data.reserved) {
-    return false;
   } else if (data.stock <= 0) {
     return false;
   } else {

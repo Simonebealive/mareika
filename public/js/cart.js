@@ -67,10 +67,8 @@ const setUpEvents = (name) => {
 
   deleteBtns.forEach((btn, i) => {
     btn.addEventListener("click", () => {
-      const removedProduct = product[i];
       product = product.filter((item, index) => index != i);
       localStorage.setItem(name, JSON.stringify(product));
-      setDbReservedFalse([removedProduct]);
       location.reload();
     });
   });
