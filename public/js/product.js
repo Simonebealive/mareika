@@ -64,7 +64,7 @@ const setProductData = (data) => {
 
         if (response.status === 401) {
           // Unauthorized: User is not logged in
-          window.location.href = '/login.html?redirect=' + encodeURIComponent(window.location.pathname);
+          window.location.href = '/login?redirect=' + encodeURIComponent(window.location.pathname);
           return;
         }
 

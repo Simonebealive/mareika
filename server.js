@@ -80,11 +80,19 @@ app.get("/", (req, res) => {
 });
 
 app.post("/reservations", async (req, res) => {
-  const { productId, userId } = req.body;
-  const expiresAt = admin.firestore.Timestamp.fromDate(
-    new Date(Date.now() + 10 * 60 * 1000)
-  );
+  const { productId } = req.body;
   try {
+    const token = req.cookies.token;
+    if (!token) {
+      return res.status(401).json({ message: "No token provided" });
+    }
+    const decoded = jwt.verify(token, JWT_SECRET);
+    const userEmail = decoded.email;
+
+    const expiresAt = admin.firestore.Timestamp.fromDate(
+      new Date(Date.now() + 10 * 60 * 1000)
+    );
+
     await db.runTransaction(async (transaction) => {
       const reservationRef = db.collection("reservations").doc(productId);
 
@@ -96,7 +104,7 @@ app.post("/reservations", async (req, res) => {
 
       transaction.set(reservationRef, {
         productId,
-        userId,
+        userEmail,
         expiresAt,
       });
     });
@@ -351,13 +359,16 @@ app.post("/login", (req, res) => {
                 JWT_SECRET,
                 { expiresIn: "1h" }
               );
-              res.cookie('token', token, {
+              res.cookie("token", token, {
                 httpOnly: false,
-                secure: process.env.NODE_ENV === 'production', // Use secure cookies in production
-                sameSite: 'lax',
-                maxAge: 3600000 // 1 hour in milliseconds
+                secure: process.env.NODE_ENV === "production", // Use secure cookies in production
+                sameSite: "lax",
+                maxAge: 3600000, // 1 hour in milliseconds
               });
-              console.log("Token set in cookies:", res.getHeaders()['set-cookie']);
+              console.log(
+                "Token set in cookies:",
+                res.getHeaders()["set-cookie"]
+              );
               return res.json({
                 message: "Login successful",
                 email: data.email,
@@ -386,12 +397,12 @@ app.post("/login", (req, res) => {
 app.post("/logout", async (req, res) => {
   console.log("Logout request received");
   console.log("Cookies before clearing:", req.cookies);
-  
-  res.clearCookie('token');
-  
+
+  res.clearCookie("token");
+
   console.log("Cookies after clearing:", req.cookies);
   console.log("Response headers:", res.getHeaders());
-  
+
   res.status(200).json({ message: "Logged out successfully" });
 });
 
@@ -404,6 +415,9 @@ app.post("/verify-token", (req, res) => {
   try {
     console.log("Verifying token:", token);
     const decoded = jwt.verify(token, JWT_SECRET);
+    console.log("Decoded token:", decoded);
+    // console log all attributes from decoded
+    console.log("Decoded token attributes:", Object.keys(decoded));
     return res.status(200).json({ valid: true, user: decoded });
   } catch (err) {
     console.log("Invalid token:", err);
@@ -506,7 +520,7 @@ app.use((req, res) => {
   res.sendFile(path.join(staticPath, "404.html"));
 });
 
-app.get('/debug-token', (req, res) => {
+app.get("/debug-token", (req, res) => {
   console.log("Cookies received:", req.cookies);
   res.json({ cookies: req.cookies });
 });
