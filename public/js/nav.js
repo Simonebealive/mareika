@@ -41,13 +41,28 @@ userImageButton.addEventListener("click", () => {
   userPopup.classList.toggle("hide");
 });
 
-let user = JSON.parse(sessionStorage.user || null);
-if (user != null) {
-  popupText.innerHTML = `logged in as ${user.name}`;
+function isLoggedIn() {
+  console.log("All cookies:", document.cookie);
+  const cookies = document.cookie.split(';').reduce((acc, cookie) => {
+    const [name, value] = cookie.trim().split('=');
+    acc[name] = value;
+    return acc;
+  }, {});
+  const result = 'token' in cookies;
+  console.log("Is token present:", result);
+  return result;
+}
+
+if (isLoggedIn()) {
+  popupText.innerHTML = `logged in`;
   actionBtn.innerHTML = `log out`;
   actionBtn.addEventListener("click", () => {
-    sessionStorage.clear();
-    location.reload();
+    fetch("/logout", {
+      method: "POST",
+      credentials: "include",
+    }).then(() => {
+      location.reload();
+    });
   });
 } else {
   popupText.innerHTML = `log in to place order`;

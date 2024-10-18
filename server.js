@@ -10,6 +10,7 @@ import { fileURLToPath } from "url";
 import { readFile } from "fs/promises";
 import dotenv from "dotenv";
 import aws from "aws-sdk";
+import cookieParser from "cookie-parser";
 
 dotenv.config();
 
@@ -17,7 +18,7 @@ dotenv.config();
 const JWT_SECRET = process.env.JWT_SECRET || null;
 
 if (!process.env.JWT_SECRET) {
-  console.warn('WARNING: JWT_SECRET is not set.');
+  console.warn("WARNING: JWT_SECRET is not set.");
 }
 
 // Get the directory name of the current module
@@ -71,6 +72,7 @@ const app = express();
 // middlewares
 app.use(express.static(staticPath));
 app.use(express.json());
+app.use(cookieParser());
 
 // routes
 app.get("/", (req, res) => {
@@ -334,7 +336,9 @@ app.post("/login", (req, res) => {
         bcrypt.compare(password, user.data().password, (err, result) => {
           if (err) {
             console.error("Error comparing passwords:", err);
-            return res.status(500).json({ alert: "An error occurred during login" });
+            return res
+              .status(500)
+              .json({ alert: "An error occurred during login" });
           }
           if (result) {
             let data = user.data();
@@ -347,14 +351,23 @@ app.post("/login", (req, res) => {
                 JWT_SECRET,
                 { expiresIn: "1h" }
               );
+              res.cookie('token', token, {
+                httpOnly: false,
+                secure: process.env.NODE_ENV === 'production', // Use secure cookies in production
+                sameSite: 'lax',
+                maxAge: 3600000 // 1 hour in milliseconds
+              });
+              console.log("Token set in cookies:", res.getHeaders()['set-cookie']);
               return res.json({
-                token: token,
+                message: "Login successful",
                 email: data.email,
                 seller: data.seller,
               });
             } catch (jwtError) {
               console.error("Error creating JWT:", jwtError);
-              return res.status(500).json({ alert: "An error occurred during login" });
+              return res
+                .status(500)
+                .json({ alert: "An error occurred during login" });
             }
           } else {
             return res.status(401).json({ alert: "Password is incorrect" });
@@ -364,8 +377,38 @@ app.post("/login", (req, res) => {
     })
     .catch((dbError) => {
       console.error("Database error:", dbError);
-      res.status(500).json({ alert: "An error occurred while accessing the database" });
+      res
+        .status(500)
+        .json({ alert: "An error occurred while accessing the database" });
     });
+});
+
+app.post("/logout", async (req, res) => {
+  console.log("Logout request received");
+  console.log("Cookies before clearing:", req.cookies);
+  
+  res.clearCookie('token');
+  
+  console.log("Cookies after clearing:", req.cookies);
+  console.log("Response headers:", res.getHeaders());
+  
+  res.status(200).json({ message: "Logged out successfully" });
+});
+
+app.post("/verify-token", (req, res) => {
+  const token = req.cookies.token;
+  if (!token) {
+    console.log("No token provided");
+    return res.status(401).json({ valid: false, alert: "No token provided" });
+  }
+  try {
+    console.log("Verifying token:", token);
+    const decoded = jwt.verify(token, JWT_SECRET);
+    return res.status(200).json({ valid: true, user: decoded });
+  } catch (err) {
+    console.log("Invalid token:", err);
+    return res.status(401).json({ valid: false, alert: "Invalid token" });
+  }
 });
 
 app.get("/products/:id", (req, res) => {
@@ -461,6 +504,11 @@ app.get("/404", (req, res) => {
 
 app.use((req, res) => {
   res.sendFile(path.join(staticPath, "404.html"));
+});
+
+app.get('/debug-token', (req, res) => {
+  console.log("Cookies received:", req.cookies);
+  res.json({ cookies: req.cookies });
 });
 
 app.listen(3000, () => {

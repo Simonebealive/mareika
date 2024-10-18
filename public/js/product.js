@@ -50,18 +50,36 @@ const setProductData = (data) => {
   }
   cartBtn.addEventListener("click", async () => {
     if (!cartBtn.disabled) {
-      const guestId = getOrCreateGuestId();
       try {
-        const response = await sendData("/reservations", {
-          productId: data.id,
-          userId: guestId,
+        const response = await fetch("/reservations", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            productId: data.id
+          }),
+          credentials: 'include' // This ensures cookies are sent with the request
         });
-        if (response.message === "Reservation created successfully") {
+
+        if (response.status === 401) {
+          // Unauthorized: User is not logged in
+          window.location.href = '/login.html?redirect=' + encodeURIComponent(window.location.pathname);
+          return;
+        }
+
+        if (!response.ok) {
+          throw new Error('Failed to create reservation');
+        }
+
+        const result = await response.json();
+
+        if (result.message === "Reservation created successfully") {
           cartBtn.innerHTML = "Added to cart";
           cartBtn.disabled = true;
           console.log("Reservation created successfully");
         } else {
-          console.warn("Failed to create reservation:", response.message);
+          console.warn("Failed to create reservation:", result.message);
           cartBtn.innerHTML = "Try again";
         }
       } catch (error) {
@@ -70,31 +88,6 @@ const setProductData = (data) => {
       }
     }
   });
-};
-
-const addToCart = (product) => {
-  if (!product.id) {
-    throw new Error("Product ID not found");
-  }
-
-  const isAvailable = isProductAvailable(product);
-  if (!isAvailable) {
-    console.warn("Product not available");
-    return "Out of stock";
-  }
-};
-
-const getOrCreateGuestId = () => {
-  let guestId = localStorage.getItem("guestId");
-  if (guestId) {
-    return guestId;
-  } else {
-    const timeNow = Date.now();
-    const randomNr = crypto.randomUUID();
-    guestId = `${timeNow}-${randomNr}`;
-    localStorage.setItem("guestId", guestId);
-    return guestId;
-  }
 };
 
 const removeDuplicateProducts = (similarProducts, currProduct) => {
