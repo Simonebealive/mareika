@@ -20,7 +20,7 @@ const createSmallCards = (data) => {
               <p class="sm-des">${data.productDes}</p>
             </div>
             <p class="sm-price">${data.actualPrice} CHF</p>
-            <button class="sm-delete-btn">
+            <button class="sm-delete-btn" data-reservation-id="${data.reservationId}">
               <img src="img/close.png" alt="" />
             </button>
           </div>
@@ -29,63 +29,117 @@ const createSmallCards = (data) => {
 };
 
 let totalBill = 0;
-const setProducts = (name) => {
-  const element = document.querySelector(`.${name}`);
-  let data;
+
+const fetchReservations = async () => {
   try {
-    const rawData = localStorage.getItem(name);
-    data = JSON.parse(rawData);
-    if (!Array.isArray(data)) {
-      data = [data];
-    }
-  } catch (error) {
-    console.error(`Error parsing JSON from localStorage: ${error}`);
-    data = null;
-  }
-  if (data == null || data.length == 0 || data.includes(null)) {
-    console.log(`No data found for ${name}, showing empty cart image`);
-    element.innerHTML = `<img src="img/empty-cart.png" class="empty-img" alt="" />`;
-  } else {
-    for (let i = 0; i < data.length; i++) {
-      element.innerHTML += createSmallCards(data[i]);
-      if (name == "cart") {
-        totalBill += Number(data[i].actualPrice);
+    const response = await fetch("/reservations", {
+      method: "GET",
+      credentials: "include",
+    });
+
+    if (!response.ok) {
+      if (response.status === 401) {
+        window.location.href =
+          "/login?redirect=" + encodeURIComponent(window.location.pathname);
       }
+      throw new Error("HTTP error, status: " + response.status);
     }
-    let checkoutBill = document.querySelector(".checkout-bill");
-    checkoutBill.innerHTML = `${totalBill} CHF`;
+
+    const reservationData = await response.json();
+
+    const reservationIds = reservationData.map(
+      (reservation) => reservation.productId
+    );
+    return reservationIds;
+  } catch (error) {
+    console.error("Error fetching reservations or products:", error);
+    return { reservationData: [], productsData: [] };
   }
-  setUpEvents(name);
 };
 
-const setUpEvents = (name) => {
-  const deleteBtns = document.querySelectorAll(".sm-delete-btn");
-  let product = JSON.parse(localStorage.getItem(name));
-  if (!Array.isArray(product)) {
-    product = product ? [product] : [];
+const fetchProducts = async (reservationIds) => {
+  let result = [];
+  for (const reservationId of reservationIds) {
+    const response = await fetch("/get-products", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ id: reservationId }),
+      credentials: "include",
+    });
+    if (response.ok) {
+      const product = await response.json();
+      result.push(product);
+    }
+  }
+  return result;
+};
+
+const setProducts = () => {
+  const element = document.querySelector(".cart");
+  async function setupCart() {
+    try {
+      const reservations = await fetchReservations();
+      const products = await fetchProducts(reservations);
+      console.log("setProducts, fetchProducts", products);
+      if (products.length === 0) {
+        console.log(`No reservations found, showing empty cart image`);
+        element.innerHTML = `<img src="img/empty-cart.png" class="empty-img" alt="" />`;
+      } else {
+        element.innerHTML = "";
+        totalBill = 0;
+        for (const product of products) {
+          const reservation = reservations.find(
+            (r) => r.productId === product.id
+          );
+          if (product) {
+            element.innerHTML += createSmallCards({
+              ...product,
+            });
+            totalBill += Number(product.actualPrice);
+          } else {
+            console.warn(
+              `Product not found for reservation: ${reservation.productId}`
+            );
+          }
+        }
+        const checkoutBill = document.querySelector(".checkout-bill");
+        checkoutBill.innerHTML = `${totalBill.toFixed(2)} CHF`;
+      }
+    } catch (error) {
+      console.error("Error setting up cart:", error);
+      element.innerHTML = `<p>An error occurred while loading your cart. Please try again later.</p>`;
+    }
   }
 
-  deleteBtns.forEach((btn, i) => {
+  setupCart();
+  setUpEvents();
+};
+
+const setUpEvents = () => {
+  const deleteBtns = document.querySelectorAll(".sm-delete-btn");
+
+  deleteBtns.forEach((btn) => {
     btn.addEventListener("click", () => {
-      product = product.filter((item, index) => index != i);
-      localStorage.setItem(name, JSON.stringify(product));
-      location.reload();
+      const reservationId = btn.dataset.reservationId;
+      fetch(`/reservations/${reservationId}`, {
+        method: "DELETE",
+        credentials: "include",
+      })
+        .then((response) => {
+          if (!response.ok) {
+            throw new Error("Failed to delete reservation");
+          }
+          location.reload();
+        })
+        .catch((error) => {
+          console.error("Error deleting reservation:", error);
+        });
     });
   });
 };
 
-const setDbReservedFalse = (product) => {
-  if (Array.isArray(product)) {
-    product.forEach((item) => {
-      if (item && item.id) {
-        sendData("/update_product", { id: item.id, reserved: false });
-      } else {
-        console.error("Invalid product object:", item);
-      }
-    });
-  } else {
-    console.error("Product is not an array:", product);
-  }
-};
-
-setProducts("cart");
+document.addEventListener("DOMContentLoaded", () => {
+  setProducts();
+});

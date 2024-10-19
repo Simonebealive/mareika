@@ -119,6 +119,25 @@ app.post("/reservations", async (req, res) => {
   }
 });
 
+app.get("/reservations", async (req, res) => {
+  try {
+    const token = req.cookies.token;
+    if (!token) {
+      return res.status(401).json({ message: "No token provided" });
+    }
+    const decoded = jwt.verify(token, JWT_SECRET);
+    const userEmail = decoded.email;
+    const reservations = await db
+      .collection("reservations")
+      .where("userEmail", "==", userEmail)
+      .get();
+    const reservationList = reservations.docs.map((doc) => doc.data());
+    res.status(200).json(reservationList);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+});
+
 app.get("/reservations/:id", async (req, res) => {
   const id = req.params.id;
   try {

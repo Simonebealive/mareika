@@ -51,25 +51,17 @@ const setProductData = (data) => {
   cartBtn.addEventListener("click", async () => {
     if (!cartBtn.disabled) {
       try {
-        const response = await fetch("/reservations", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            productId: data.id
-          }),
-          credentials: 'include' // This ensures cookies are sent with the request
-        });
+        const response = await addReservation(data);
 
         if (response.status === 401) {
           // Unauthorized: User is not logged in
-          window.location.href = '/login?redirect=' + encodeURIComponent(window.location.pathname);
+          window.location.href =
+            "/login?redirect=" + encodeURIComponent(window.location.pathname);
           return;
         }
 
         if (!response.ok) {
-          throw new Error('Failed to create reservation');
+          throw new Error("Failed to create reservation");
         }
 
         const result = await response.json();
@@ -88,6 +80,25 @@ const setProductData = (data) => {
       }
     }
   });
+};
+
+const addReservation = async (productData) => {
+  try {
+    const response = await fetch("/reservations", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        productId: productData.id,
+      }),
+      credentials: "include", // This ensures cookies are sent with the request
+    });
+    return response;
+  } catch (error) {
+    console.error("Error creating reservation:", error);
+    throw error;
+  }
 };
 
 const removeDuplicateProducts = (similarProducts, currProduct) => {
